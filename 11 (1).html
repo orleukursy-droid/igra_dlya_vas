@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Урок: Неопределенный интеграл (11 класс)</title>
+    <!-- Tailwind CSS for modern styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between">
+
+    <header class="bg-indigo-600 text-white shadow-md py-4 px-6">
+        <div class="max-w-4xl mx-auto flex justify-between items-center">
+            <h1 class="text-sm md:text-xl font-bold tracking-tight">Математика 11 класс • Неопределенный интеграл</h1>
+            <div id="student-badge" class="hidden text-xs bg-indigo-700 px-3 py-1 rounded-full font-medium truncate max-w-[150px] md:max-w-none"></div>
+        </div>
+    </header>
+
+    <main class="max-w-3xl w-full mx-auto p-4 md:p-6 my-auto flex-grow flex items-center justify-center">
+
+        <!-- STEP 1: Registration View -->
+        <div id="step-auth" class="bg-white w-full rounded-2xl shadow-xl p-6 md:p-8 border border-slate-100">
+            <div class="text-center mb-6">
+                <span class="bg-indigo-100 text-indigo-700 text-xs font-semibold px-3 py-1 rounded-full">Регистрация на урок</span>
+                <h2 class="text-2xl font-bold mt-2 text-slate-900">Добро пожаловать!</h2>
+                <p class="text-sm text-slate-500 mt-1">Пожалуйста, введите ваши данные перед началом занятия.</p>
+            </div>
+            
+            <form id="auth-form" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Фамилия</label>
+                    <input type="text" id="surname" required autocomplete="family-name" placeholder="например, Иванов" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Имя</label>
+                    <input type="text" id="name" required autocomplete="given-name" placeholder="например, Алексей" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Класс</label>
+                    <input type="text" id="grade" required placeholder="например, 11 'А'" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition">
+                </div>
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-semibold py-3.5 rounded-xl shadow-lg shadow-indigo-200 transition duration-200 text-base">
+                    Начать урок
+                </button>
+            </form>
+        </div>
+
+        <!-- STEP 2: Presentation & Theory View -->
+        <div id="step-theory" class="hidden bg-white w-full rounded-2xl shadow-xl p-6 md:p-8 border border-slate-100">
+            <div class="flex justify-between items-center mb-4 border-b pb-3">
+                <span id="slide-indicator" class="text-xs font-bold text-indigo-600 uppercase tracking-wider">Слайд 1 из 4</span>
+                <span class="text-xs text-slate-400 font-medium">Теория</span>
+            </div>
+
+            <div id="slide-content" class="min-h-[280px] flex flex-col justify-center">
+                <!-- Content injected dynamically via JS -->
+            </div>
+
+            <div class="flex justify-between items-center mt-6 pt-4 border-t">
+                <button id="prev-slide" onclick="changeSlide(-1)" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-medium text-sm transition disabled:opacity-40">Назад</button>
+                <button id="next-slide" onclick="changeSlide(1)" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium text-sm transition">Далее</button>
+            </div>
+        </div>
+
+        <!-- STEP 3: Test View (5 questions) -->
+        <div id="step-test" class="hidden bg-white w-full rounded-2xl shadow-xl p-6 md:p-8 border border-slate-100">
+            <div class="flex justify-between items-center mb-4 border-b pb-3">
+                <span class="text-xs font-bold text-indigo-600 uppercase tracking-wider">Тест по теме (5 вопросов = 5 баллов)</span>
+                <span id="test-progress" class="text-xs text-slate-400 font-medium">Вопрос 1 из 5</span>
+            </div>
+
+            <div id="question-container" class="min-h-[220px]">
+                <!-- Question dynamically rendered here -->
+            </div>
+
+            <div class="flex justify-end mt-6 pt-4 border-t">
+                <button id="next-question" onclick="nextQuestion()" class="px-5 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium text-sm transition">Следующий вопрос</button>
+            </div>
+        </div>
+
+        <!-- STEP 4: Practical Tasks View (5 questions -> total 10 points) -->
+        <div id="step-tasks" class="hidden bg-white w-full rounded-2xl shadow-xl p-6 md:p-8 border border-slate-100">
+            <div class="flex justify-between items-center mb-4 border-b pb-3">
+                <span class="text-xs font-bold text-indigo-600 uppercase tracking-wider">Практические задания (5 заданий = 5 баллов)</span>
+                <span id="task-progress" class="text-xs text-slate-400 font-medium">Задание 1 из 5</span>
+            </div>
+
+            <div id="task-container" class="min-h-[200px]">
+                <!-- Task dynamically rendered here -->
+            </div>
+
+            <div class="flex flex-col sm:flex-row justify-between items-center mt-6 pt-4 border-t gap-3">
+                <div id="task-feedback" class="text-sm font-medium w-full sm:w-auto text-center sm:text-left"></div>
+                <button id="submit-task" onclick="checkTaskAnswer()" class="w-full sm:w-auto px-5 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium text-sm transition">Проверить</button>
+            </div>
+        </div>
+
+        <!-- STEP 4.5: Score Preview Screen -->
+        <div id="step-score-preview" class="hidden bg-white w-full rounded-2xl shadow-xl p-6 md:p-8 border border-slate-100 text-center">
+            <div class="w-16 h-16 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl font-bold">🎯</div>
+            <h2 class="text-2xl font-bold text-slate-900">Ваш предварительный результат</h2>
+            <p class="text-sm text-slate-500 mt-1 mb-6">Вы успешно завершили основную часть урока.</p>
+            
+            <div class="bg-indigo-50 border border-indigo-100 rounded-2xl p-6 mb-6 inline-block w-full max-w-sm">
+                <div class="text-xs text-indigo-600 uppercase font-bold tracking-wider mb-1">Итоговый балл</div>
+                <div class="text-5xl font-extrabold text-indigo-700 mb-2"><span id="preview-total-score">0</span> <span class="text-2xl text-indigo-400">/ 10</span></div>
+                <div class="text-xs text-slate-600 space-y-1 border-t border-indigo-200/60 pt-3 mt-3">
+                    <div class="flex justify-between"><span>Тест:</span> <b id="preview-test-score">0</b> из 5</div>
+                    <div class="flex justify-between"><span>Практика:</span> <b id="preview-task-score">0</b> из 5</div>
+                </div>
+            </div>
+
+            <div>
+                <button onclick="proceedToReflection()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3.5 rounded-xl shadow-lg shadow-indigo-200 transition text-base">
+                    Перейти к рефлексии
+                </button>
+            </div>
+        </div>
+
+        <!-- STEP 5: Reflection View -->
+        <div id="step-reflection" class="hidden bg-white w-full rounded-2xl shadow-xl p-6 md:p-8 border border-slate-100 text-center">
+            <span class="bg-emerald-100 text-emerald-700 text-xs font-semibold px-3 py-1 rounded-full">Итоги урока</span>
+            <h2 class="text-2xl font-bold mt-3 text-slate-900">Рефлексия</h2>
+            <p class="text-sm text-slate-500 mt-1 mb-6">Оцените, насколько хорошо вы усвоили тему сегодняшнего урока.</p>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                <button onclick="submitResults('Все понятно')" class="p-4 border-2 border-slate-200 hover:border-emerald-500 hover:bg-emerald-50 active:bg-emerald-100 rounded-2xl transition group flex flex-col items-center">
+                    <span class="text-3xl mb-2">🟢</span>
+                    <span class="font-semibold text-slate-800 group-hover:text-emerald-700">Все понятно</span>
+                </button>
+                <button onclick="submitResults('Было сложно')" class="p-4 border-2 border-slate-200 hover:border-amber-500 hover:bg-amber-50 active:bg-amber-100 rounded-2xl transition group flex flex-col items-center">
+                    <span class="text-3xl mb-2">🟡</span>
+                    <span class="font-semibold text-slate-800 group-hover:text-amber-700">Было сложно</span>
+                </button>
+                <button onclick="submitResults('Не понял')" class="p-4 border-2 border-slate-200 hover:border-rose-500 hover:bg-rose-50 active:bg-rose-100 rounded-2xl transition group flex flex-col items-center">
+                    <span class="text-3xl mb-2">🔴</span>
+                    <span class="font-semibold text-slate-800 group-hover:text-rose-700">Не понял</span>
+                </button>
+            </div>
+            
+            <div id="sync-status" class="text-xs text-slate-400">Результаты будут отправлены учителю в Google Таблицу.</div>
+        </div>
+
+        <!-- STEP 6: Completion screen -->
+        <div id="step-done" class="hidden bg-white w-full rounded-2xl shadow-xl p-8 border border-slate-100 text-center">
+            <div id="done-icon" class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold">✓</div>
+            <h2 id="done-title" class="text-2xl font-bold text-slate-900">Урок завершен!</h2>
+            <p id="done-desc" class="text-sm text-slate-600 mt-2">Спасибо за активную работу. Ваши результаты успешно отправлены.</p>
+            <div id="result-summary" class="mt-4 p-4 bg-slate-50 rounded-xl text-sm text-slate-700 inline-block text-left w-full"></div>
+        </div>
+
+    </main>
+
+    <!-- Modal Warning for Tab Switch / Focus Loss -->
+    <div id="warning-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 text-center border border-slate-100">
+            <div class="w-16 h-16 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">⚠️</div>
+            <h3 class="text-xl font-bold text-slate-900">Внимание! Нарушение правил урока</h3>
+            <p class="text-sm text-slate-600 mt-2">Вы переключились на другую вкладку или свернули окно во время прохождения заданий/теста. Выполнение урока досрочно завершено, текущие результаты отправлены учителю.</p>
+            <button onclick="closeWarningModal()" class="mt-6 w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold py-3.5 rounded-xl transition">Понятно</button>
+        </div>
+    </div>
+
+    <footer class="py-4 text-center text-xs text-slate-400">
+        Учебный модуль по математическому анализу © 2026
+    </footer>
+
+    <script>
+        // Data storage object for the student session
+        let studentData = {
+            surname: '',
+            name: '',
+            grade: '',
+            testScore: 0,
+            taskScore: 0,
+            totalScore: 0,
+            reflection: ''
+        };
+
+        // Live Google Apps Script Web App URL
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwPzxl5V8owFS-bhI_SSQ_D6LZ642IGY40H42_1YreND7bRPMy9iNFdi2dxLteMluSonA/exec';
+
+        // Slide presentation data
+        const slides = [
+            {
+                title: "Понятие первообразной",
+                content: `<p class="text-slate-600 mb-4 text-sm md:text-base">Функция $F(x)$ называется <b>первообразной</b> для функции $f(x)$ на заданном промежутке, если для всех $x$ из этого промежутка выполняется равенство:</p>
+                          <div class="bg-indigo-50 p-4 rounded-xl text-center font-mono text-indigo-700 font-bold text-base md:text-lg mb-4">F'(x) = f(x)</div>
+                          <p class="text-xs md:text-sm text-slate-500">Например, первообразной для $f(x) = 2x$ является $F(x) = x^2$, так как $(x^2)' = 2x$.</p>`
+            },
+            {
+                title: "Что такое неопределенный интеграл?",
+                content: `<p class="text-slate-600 mb-4 text-sm md:text-base"><b>Неопределенным интегралом</b> от функции $f(x)$ называется совокупность всех ее первообразных:</p>
+                          <div class="bg-indigo-50 p-4 rounded-xl text-center font-mono text-indigo-700 font-bold text-base md:text-lg mb-4">∫ f(x) dx = F(x) + C</div>
+                          <p class="text-xs md:text-sm text-slate-500">Где $F(x)$ — одна из первообразных, а $C$ — произвольная постоянная (константа интегрирования).</p>`
+            },
+            {
+                title: "Основные свойства интеграла",
+                content: `<ul class="space-y-3 text-slate-600 text-xs md:text-sm">
+                            <li class="bg-slate-50 p-3 rounded-xl border border-slate-100">1. Производная неопределенного интеграла равна подынтегральной функции: <br><code class="text-indigo-600 font-semibold">(∫ f(x) dx)' = f(x)</code></li>
+                            <li class="bg-slate-50 p-3 rounded-xl border border-slate-100">2. Интеграл от алгебраической суммы равен сумме интегралов: <br><code class="text-indigo-600 font-semibold">∫ (f(x) + g(x)) dx = ∫ f(x)dx + ∫ g(x)dx</code></li>
+                            <li class="bg-slate-50 p-3 rounded-xl border border-slate-100">3. Постоянный множитель можно выносить за знак интеграла: <br><code class="text-indigo-600 font-semibold">∫ k·f(x) dx = k·∫ f(x) dx</code></li>
+                          </ul>`
+            },
+            {
+                title: "Таблица основных интегралов",
+                content: `<div class="grid grid-cols-2 gap-3 text-xs md:text-sm">
+                            <div class="bg-slate-50 p-3 rounded-xl border border-slate-100"><b>∫ 0 dx</b> = C</div>
+                            <div class="bg-slate-50 p-3 rounded-xl border border-slate-100"><b>∫ x<sup>n</sup> dx</b> = $\\frac{x^{n+1}}{n+1} + C$ (n ≠ -1)</div>
+                            <div class="bg-slate-50 p-3 rounded-xl border border-slate-100"><b>∫ dx / x</b> = ln|x| + C</div>
+                            <div class="bg-slate-50 p-3 rounded-xl border border-slate-100"><b>∫ e<sup>x</sup> dx</b> = e<sup>x</sup> + C</div>
+                            <div class="bg-slate-50 p-3 rounded-xl border border-slate-100"><b>∫ cos(x) dx</b> = sin(x) + C</div>
+                            <div class="bg-slate-50 p-3 rounded-xl border border-slate-100"><b>∫ sin(x) dx</b> = -cos(x) + C</div>
+                          </div>`
+            }
+        ];
+
+        let currentSlideIndex = 0;
+
+        // Quiz data (5 questions = 5 points)
+        const quizQuestions = [
+            {
+                question: "Что такое первообразная функции f(x)?",
+                options: [
+                    "Функция, производная которой равна f(x)",
+                    "Производная функции f(x)",
+                    "Интеграл от производной",
+                    "Числовое значение функции"
+                ],
+                correct: 0
+            },
+            {
+                question: "Чему равен неопределенный интеграл ∫ 0 dx?",
+                options: ["0", "x", "C (константа)", "1"],
+                correct: 2
+            },
+            {
+                question: "Чему равен интеграл ∫ x^2 dx?",
+                options: ["2x + C", "x^3 / 3 + C", "x^3 + C", "3x^3 + C"],
+                correct: 1
+            },
+            {
+                question: "Какое свойство верно для постоянного множителя k?",
+                options: [
+                    "k исчезает при интегрировании",
+                    "k выносится за знак интеграла",
+                    "k возводится в степень",
+                    "Умножается на константу C"
+                ],
+                correct: 1
+            },
+            {
+                question: "Чему равен интеграл ∫ e^x dx?",
+                options: ["e^x + C", "x * e^x + C", "ln(x) + C", "e^(x+1) / (x+1) + C"],
+                correct: 0
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let selectedAnswers = [];
+
+        // Practical tasks data (5 questions = 5 points, total 10)
+        const tasks = [
+            {
+                question: "Найдите интеграл: ∫ 3x^2 dx",
+                hint: "Используйте формулу степенной функции. Константу C писать не нужно (например: x^3)",
+                answer: "x^3"
+            },
+            {
+                question: "Найдите интеграл: ∫ 5 dx",
+                hint: "Интеграл от константы k равен k*x (например: 5x)",
+                answer: "5x"
+            },
+            {
+                question: "Найдите интеграл: ∫ cos(x) dx",
+                hint: "Вспомните таблицу интегралов для тригонометрических функций (например: sin(x))",
+                answer: "sin(x)"
+            },
+            {
+                question: "Найдите интеграл: ∫ 4x^3 dx",
+                hint: "Примените формулу степенной функции для 4x^3",
+                answer: "x^4"
+            },
+            {
+                question: "Найдите интеграл: ∫ sin(x) dx",
+                hint: "Интеграл от синуса равен минус косинус",
+                answer: "-cos(x)"
+            }
+        ];
+
+        let currentTaskIndex = 0;
+        let taskCorrectCount = 0;
+        let lessonTerminatedDueToFocus = false;
+        let dataSentFlag = false;
+
+        // Registration form submission handler
+        document.getElementById('auth-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            studentData.surname = document.getElementById('surname').value.trim();
+            studentData.name = document.getElementById('name').value.trim();
+            studentData.grade = document.getElementById('grade').value.trim();
+
+            if(!studentData.surname || !studentData.name || !studentData.grade) return;
+
+            // Update badge in header
+            const badge = document.getElementById('student-badge');
+            badge.innerText = `${studentData.surname} ${studentData.name} (${studentData.grade})`;
+            badge.classList.remove('hidden');
+
+            // Switch view from Auth to Theory
+            document.getElementById('step-auth').classList.add('hidden');
+            document.getElementById('step-theory').classList.remove('hidden');
+            renderSlide();
+        });
+
+        // Slide navigation functions
+        function renderSlide() {
+            const slide = slides[currentSlideIndex];
+            document.getElementById('slide-indicator').innerText = `Слайд ${currentSlideIndex + 1} из ${slides.length}`;
+            document.getElementById('slide-content').innerHTML = `
+                <h3 class="text-lg md:text-xl font-bold text-slate-900 mb-3">${slide.title}</h3>
+                <div class="text-slate-600">${slide.content}</div>
+            `;
+            
+            document.getElementById('prev-slide').disabled = currentSlideIndex === 0;
+            const nextBtn = document.getElementById('next-slide');
+            if(currentSlideIndex === slides.length - 1) {
+                nextBtn.innerText = "Перейти к тесту";
+            } else {
+                nextBtn.innerText = "Далее";
+            }
+        }
+
+        function changeSlide(direction) {
+            currentSlideIndex += direction;
+            if(currentSlideIndex >= slides.length) {
+                // Switch to test
+                document.getElementById('step-theory').classList.add('hidden');
+                document.getElementById('step-test').classList.remove('hidden');
+                renderQuestion();
+            } else if(currentSlideIndex < 0) {
+                currentSlideIndex = 0;
+            } else {
+                renderSlide();
+            }
+        }
+
+        // Render Quiz Questions
+        function renderQuestion() {
+            const q = quizQuestions[currentQuestionIndex];
+            document.getElementById('test-progress').innerText = `Вопрос ${currentQuestionIndex + 1} из ${quizQuestions.length}`;
+            
+            let optionsHTML = '';
+            q.options.forEach((opt, idx) => {
+                optionsHTML += `
+                    <label class="flex items-center space-x-3 p-3.5 border border-slate-200 rounded-xl hover:bg-slate-50 active:bg-slate-100 cursor-pointer transition">
+                        <input type="radio" name="quiz-opt" value="${idx}" class="w-5 h-5 text-indigo-600 focus:ring-indigo-500">
+                        <span class="text-sm md:text-base text-slate-700">${opt}</span>
+                    </label>
+                `;
+            });
+
+            document.getElementById('question-container').innerHTML = `
+                <h3 class="font-semibold text-slate-900 mb-4 text-base md:text-lg">${q.question}</h3>
+                <div class="space-y-2.5">${optionsHTML}</div>
+            `;
+
+            if(currentQuestionIndex === quizQuestions.length - 1) {
+                document.getElementById('next-question').innerText = "Перейти к практике";
+            }
+        }
+
+        function nextQuestion() {
+            const selected = document.querySelector('input[name="quiz-opt"]:checked');
+            if(!selected) {
+                showCustomMessage("Пожалуйста, выберите вариант ответа.", "test");
+                return;
+            }
+            
+            selectedAnswers.push(parseInt(selected.value));
+            currentQuestionIndex++;
+
+            if(currentQuestionIndex < quizQuestions.length) {
+                renderQuestion();
+            } else {
+                // Calculate test score
+                let score = 0;
+                quizQuestions.forEach((q, idx) => {
+                    if(selectedAnswers[idx] === q.correct) score++;
+                });
+                studentData.testScore = score;
+
+                // Move to practical tasks
+                document.getElementById('step-test').classList.add('hidden');
+                document.getElementById('step-tasks').classList.remove('hidden');
+                renderTask();
+            }
+        }
+
+        // Render Practical Tasks
+        function renderTask() {
+            const t = tasks[currentTaskIndex];
+            document.getElementById('task-progress').innerText = `Задание ${currentTaskIndex + 1} из ${tasks.length}`;
+            document.getElementById('task-feedback').innerText = '';
+            document.getElementById('submit-task').disabled = false;
+
+            document.getElementById('task-container').innerHTML = `
+                <h3 class="font-semibold text-slate-900 mb-2 text-base md:text-lg">${t.question}</h3>
+                <p class="text-xs md:text-sm text-slate-400 mb-4">💡 Подсказка: ${t.hint}</p>
+                <input type="text" id="task-input" autocomplete="off" autocapitalize="none" placeholder="Введите ваш ответ..." class="w-full px-4 py-3.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition font-mono text-base">
+            `;
+
+            if(currentTaskIndex === tasks.length - 1) {
+                document.getElementById('submit-task').innerText = "Проверить и узнать результат";
+            }
+        }
+
+        function checkTaskAnswer() {
+            const inputEl = document.getElementById('task-input');
+            if (!inputEl) return;
+            
+            const userAns = inputEl.value.trim().toLowerCase().replace(/\s+/g, '');
+            const correctAns = tasks[currentTaskIndex].answer.toLowerCase().replace(/\s+/g, '');
+            const feedback = document.getElementById('task-feedback');
+
+            if(!userAns) {
+                feedback.innerText = "Пожалуйста, введите ответ.";
+                feedback.className = "text-sm font-semibold text-amber-600";
+                return;
+            }
+
+            if(userAns === correctAns) {
+                feedback.innerText = "✓ Верно!";
+                feedback.className = "text-sm font-semibold text-emerald-600";
+                taskCorrectCount++;
+            } else {
+                feedback.innerText = `✗ Ошибка. Правильный ответ: ${tasks[currentTaskIndex].answer}`;
+                feedback.className = "text-sm font-semibold text-rose-600";
+            }
+
+            document.getElementById('submit-task').disabled = true;
+
+            setTimeout(() => {
+                currentTaskIndex++;
+                if(currentTaskIndex < tasks.length) {
+                    renderTask();
+                } else {
+                    studentData.taskScore = taskCorrectCount;
+                    studentData.totalScore = studentData.testScore + studentData.taskScore;
+
+                    // Show score preview screen before reflection
+                    document.getElementById('step-tasks').classList.add('hidden');
+                    document.getElementById('step-score-preview').classList.remove('hidden');
+                    
+                    document.getElementById('preview-test-score').innerText = studentData.testScore;
+                    document.getElementById('preview-task-score').innerText = studentData.taskScore;
+                    document.getElementById('preview-total-score').innerText = studentData.totalScore;
+                }
+            }, 1800);
+        }
+
+        function proceedToReflection() {
+            document.getElementById('step-score-preview').classList.add('hidden');
+            document.getElementById('step-reflection').classList.remove('hidden');
+        }
+
+        function showCustomMessage(msg, type) {
+            if(type === "test") {
+                alert(msg); // Fallback for test screen if needed, or inline toast
+            }
+        }
+
+        // Monitor window visibility and blur (tab switching / window minimization) during active test or tasks
+        function handleVisibilityOrBlur() {
+            const isTestActive = !document.getElementById('step-test').classList.contains('hidden');
+            const isTaskActive = !document.getElementById('step-tasks').classList.contains('hidden');
+
+            if ((isTestActive || isTaskActive) && !lessonTerminatedDueToFocus) {
+                lessonTerminatedDueToFocus = true;
+
+                studentData.reflection = 'Прервано (сворачивание вкладки)';
+                studentData.taskScore = taskCorrectCount;
+                studentData.totalScore = studentData.testScore + studentData.taskScore;
+
+                document.getElementById('step-test').classList.add('hidden');
+                document.getElementById('step-tasks').classList.add('hidden');
+
+                document.getElementById('done-icon').className = "w-16 h-16 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold";
+                document.getElementById('done-icon').innerText = "✕";
+                document.getElementById('done-title').innerText = "Урок прерван досрочно";
+                document.getElementById('done-desc').innerText = "Зафиксирован выход из вкладки/сворачивание окна во время выполнения заданий.";
+
+                document.getElementById('result-summary').innerHTML = `
+                    <b>Ученик:</b> ${studentData.surname} ${studentData.name} (${studentData.grade})<br>
+                    <b>Тест:</b> ${studentData.testScore} из 5<br>
+                    <b>Практика:</b> ${studentData.taskScore} из 5<br>
+                    <b>Итоговый балл:</b> <b class="text-indigo-600">${studentData.totalScore} / 10</b><br>
+                    <b>Статус:</b> Засчитано нарушение правил
+                `;
+
+                document.getElementById('step-done').classList.remove('hidden');
+                sendToGoogleSheetsReliable();
+
+                document.getElementById('warning-modal').classList.remove('hidden');
+            }
+        }
+
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                handleVisibilityOrBlur();
+            }
+        });
+
+        window.addEventListener('blur', function() {
+            handleVisibilityOrBlur();
+        });
+
+        function closeWarningModal() {
+            document.getElementById('warning-modal').classList.add('hidden');
+        }
+
+        // Reflection & Data Dispatch
+        function submitResults(reflectionOption) {
+            studentData.reflection = reflectionOption;
+            studentData.totalScore = studentData.testScore + studentData.taskScore;
+            
+            document.getElementById('step-reflection').classList.add('hidden');
+            document.getElementById('step-done').classList.remove('hidden');
+
+            document.getElementById('result-summary').innerHTML = `
+                <b>Ученик:</b> ${studentData.surname} ${studentData.name} (${studentData.grade})<br>
+                <b>Тест:</b> ${studentData.testScore} из 5<br>
+                <b>Практика:</b> ${studentData.taskScore} из 5<br>
+                <b>Итоговый балл:</b> <b class="text-indigo-600">${studentData.totalScore} / 10</b><br>
+                <b>Рефлексия:</b> ${studentData.reflection}
+            `;
+
+            sendToGoogleSheetsReliable();
+        }
+
+        // 100% reliable sending mechanism optimized specifically for iPhone Safari & iOS webviews
+        function sendToGoogleSheetsReliable() {
+            if (dataSentFlag) return;
+            dataSentFlag = true;
+
+            const payload = JSON.stringify(studentData);
+            const statusEl = document.getElementById('sync-status');
+
+            if (APPS_SCRIPT_URL.includes('YOUR_GOOGLE_APPS_SCRIPT')) {
+                console.warn("Google Apps Script URL is not configured.");
+                return;
+            }
+
+            // 1. Primary approach for mobile/iPhone: navigator.sendBeacon (Guaranteed delivery even if page unloads or user switches apps)
+            if (navigator.sendBeacon) {
+                try {
+                    const blob = new Blob([payload], { type: 'text/plain;charset=UTF-8' });
+                    const sent = navigator.sendBeacon(APPS_SCRIPT_URL, blob);
+                    if (sent) {
+                        if (statusEl) statusEl.innerText = "Результаты успешно отправлены на сервер.";
+                        return;
+                    }
+                } catch (e) {
+                    console.warn("sendBeacon failed, falling back to fetch", e);
+                }
+            }
+
+            // 2. Secondary fallback: standard fetch with no-cors mode
+            fetch(APPS_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: payload
+            }).then(() => {
+                if (statusEl) statusEl.innerText = "Результаты успешно отправлены.";
+            }).catch(err => {
+                console.error("Fetch transmission error:", err);
+                if (statusEl) statusEl.innerText = "Ошибка отправки. Попробуйте еще раз.";
+            });
+        }
+    </script>
+</body>
+</html>
