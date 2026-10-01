@@ -665,8 +665,8 @@
                 scoreTest: state.scoreTest,
                 scoreTasks: state.scoreTasks,
                 totalScore: totalScore,
-                reflection: isCheated ? "Нарушение (свернул вкладку)" : (state.reflection || "Не указано"),
-                status: isCheated ? "Штраф (0 за задачи)" : "Завершено"
+                reflection: isCheated ? "Нет" : (state.reflection || "Не указано"),
+                antiCheat: isCheated ? "Нарушение (свернул вкладку)" : "Нет"
             };
 
             document.getElementById('loader').style.display = 'block';
