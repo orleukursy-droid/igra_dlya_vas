@@ -3,679 +3,700 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Дистанционный урок — Платформа обучения</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>Дистанционный урок — Математика и Геометрия</title>
+    <!-- Подключение MathJax для рендеринга математических формул -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <style>
-        body { font-family: 'Inter', sans-serif; }
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --danger: #ef4444;
+            --success: #22c55e;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        h1, h2, h3 {
+            color: var(--text-main);
+            margin-bottom: 20px;
+        }
+
+        p {
+            line-height: 1.6;
+            margin-bottom: 15px;
+            color: var(--text-muted);
+        }
+
+        /* Экраны приложения */
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Выбор класса */
+        .classes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .class-btn {
+            padding: 14px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            background: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-main);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .class-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .class-btn.selected {
+            background: var(--primary);
+            color: #fff;
+            border-color: var(--primary);
+        }
+
+        /* Поле ввода */
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-main);
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--primary);
+        }
+
+        /* Кнопки */
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.2s;
+            width: 100%;
+        }
+
+        .btn:hover {
+            background: var(--primary-hover);
+        }
+
+        .btn:disabled {
+            background: var(--border);
+            cursor: not-allowed;
+        }
+
+        /* Теория / Конспект */
+        .theory-box {
+            background: #f1f5f9;
+            border-left: 5px solid var(--primary);
+            padding: 20px;
+            border-radius: 0 10px 10px 0;
+            margin-bottom: 25px;
+        }
+
+        /* Тесты и Задачи */
+        .question-card {
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .option-label {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.1s;
+        }
+
+        .option-label:hover {
+            background: #f8fafc;
+        }
+
+        input[type="radio"] {
+            accent-color: var(--primary);
+            transform: scale(1.2);
+        }
+
+        /* Предупреждение об античите */
+        .cheat-alert {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(239, 68, 68, 0.95);
+            z-index: 9999;
+            color: white;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .cheat-alert h2 {
+            color: white;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        /* Рефлексия */
+        .reflection-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .reflection-btn {
+            padding: 16px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            background: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s;
+        }
+
+        .reflection-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .reflection-btn.selected {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .loader {
+            border: 4px solid var(--border);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+            display: none;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
-<body class="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 min-h-screen text-slate-100 flex flex-col justify-between">
+<body>
 
-    <header class="w-full bg-slate-900/80 backdrop-blur-md border-b border-slate-800 p-4 shadow-lg sticky top-0 z-50">
-        <div class="max-w-4xl mx-auto flex justify-between items-center">
-            <div class="flex items-center space-x-3">
-                <div class="bg-indigo-600 p-2 rounded-xl text-white font-bold text-lg shadow-md">📚 Урок</div>
-                <h1 id="headerTitle" class="text-lg font-semibold tracking-wide">Дистанционное обучение</h1>
-            </div>
-            <div id="userInfoHeader" class="hidden text-sm bg-slate-800/80 px-3 py-1.5 rounded-lg border border-slate-700 flex items-center space-x-2">
-                <span id="displayClass" class="text-indigo-400 font-medium"></span>
-                <span class="text-slate-500">|</span>
-                <span id="displayName" class="text-slate-300 font-medium"></span>
-            </div>
-        </div>
-    </header>
+    <!-- Экран предупреждения об античите -->
+    <div id="cheatAlert" class="cheat-alert">
+        <h2>⚠️️ Нарушение правил урока!</h2>
+        <p>Вы свернули браузер или открыли новую вкладку. По условиям тестирования вам выставлено 0 баллов за практические задания, и урок завершен досрочно.</p>
+        <button class="btn" style="background: white; color: var(--danger); width: auto; margin-top: 20px;" onclick="location.reload()">Начать заново</button>
+    </div>
 
-    <main class="w-full max-w-4xl mx-auto p-4 md:p-6 my-auto flex-grow flex items-center justify-center">
-
-        <!-- STEP 1: Class Selection & Name Input -->
-        <div id="stepRegistration" class="w-full bg-slate-800/60 backdrop-blur-xl border border-slate-700/80 rounded-2xl p-6 md:p-8 shadow-2xl transition-all duration-300">
-            <div class="text-center mb-6">
-                <h2 class="text-2xl md:text-3xl font-bold text-white mb-2">Добро пожаловать на урок!</h2>
-                <p class="text-slate-400 text-sm">Выберите ваш класс и введите фамилию и имя для начала занятия.</p>
-            </div>
+    <div class="container">
+        <!-- ЭКРАН 1: Выбор класса и ФИО -->
+        <div id="screenRegistration" class="screen active">
+            <h2>📚 Дистанционный урок</h2>
+            <p>Выберите ваш класс и введите ФИО для начала занятия.</p>
             
-            <form id="registrationForm" onsubmit="startLesson(event)" class="space-y-5">
-                <div>
-                    <label class="block text-sm font-medium text-slate-300 mb-2">Выберите класс:</label>
-                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                        <label class="cursor-pointer">
-                            <input type="radio" name="studentClass" value="6 А,Б" required class="peer hidden">
-                            <div class="text-center p-3 rounded-xl border border-slate-700 bg-slate-900/50 peer-checked:bg-indigo-600 peer-checked:border-indigo-500 peer-checked:text-white font-medium transition-all hover:bg-slate-700/50">6 А,Б</div>
-                        </label>
-                        <label class="cursor-pointer">
-                            <input type="radio" name="studentClass" value="9В" required class="peer hidden">
-                            <div class="text-center p-3 rounded-xl border border-slate-700 bg-slate-900/50 peer-checked:bg-indigo-600 peer-checked:border-indigo-500 peer-checked:text-white font-medium transition-all hover:bg-slate-700/50">9В</div>
-                        </label>
-                        <label class="cursor-pointer">
-                            <input type="radio" name="studentClass" value="11 А" required class="peer hidden">
-                            <div class="text-center p-3 rounded-xl border border-slate-700 bg-slate-900/50 peer-checked:bg-indigo-600 peer-checked:border-indigo-500 peer-checked:text-white font-medium transition-all hover:bg-slate-700/50">11 А</div>
-                        </label>
-                        <label class="cursor-pointer">
-                            <input type="radio" name="studentClass" value="11 б" required class="peer hidden">
-                            <div class="text-center p-3 rounded-xl border border-slate-700 bg-slate-900/50 peer-checked:bg-indigo-600 peer-checked:border-indigo-500 peer-checked:text-white font-medium transition-all hover:bg-slate-700/50">11 б</div>
-                        </label>
-                    </div>
+            <div class="form-group">
+                <label>Выберите класс:</label>
+                <div class="classes-grid" id="classGrid">
+                    <button class="class-btn" data-class="6 А">6 А</button>
+                    <button class="class-btn" data-class="6 В">6 В</button>
+                    <button class="class-btn" data-class="9 В">9 В</button>
+                    <button class="class-btn" data-class="11 А">11 А</button>
+                    <button class="class-btn" data-class="11 б">11 б</button>
                 </div>
+            </div>
 
-                <div>
-                    <label for="studentName" class="block text-sm font-medium text-slate-300 mb-2">Фамилия и Имя:</label>
-                    <input type="text" id="studentName" required placeholder="Например: Иванов Иван" 
-                           class="w-full bg-slate-900/80 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all">
-                </div>
+            <div class="form-group">
+                <label for="studentName">Фамилия и Имя:</label>
+                <input type="text" id="studentName" placeholder="Например: Иванов Иван">
+            </div>
 
-                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3.5 px-6 rounded-xl shadow-lg shadow-indigo-600/30 transition-all transform hover:-translate-y-0.5">
-                    Начать урок
-                </button>
-            </form>
+            <button class="btn" id="startBtn" onclick="startLesson()" disabled>Начать урок</button>
         </div>
 
-        <!-- STEP 2: Lesson Content & Note-taking -->
-        <div id="stepLesson" class="hidden w-full bg-slate-800/60 backdrop-blur-xl border border-slate-700/80 rounded-2xl p-6 md:p-8 shadow-2xl transition-all duration-300">
-            <div class="flex justify-between items-center mb-4 border-b border-slate-700/60 pb-3">
-                <span class="text-xs uppercase tracking-wider text-indigo-400 font-semibold bg-indigo-950/80 px-2.5 py-1 rounded-md border border-indigo-800/50">Шаг 1 из 3 • Изучение темы</span>
-                <span class="text-xs text-slate-400">Внимательно изучите материал и сделайте конспект</span>
+        <!-- ЭКРАН 2: Теория и конспект -->
+        <div id="screenTheory" class="screen">
+            <h2 id="theoryTitle">Тема урока</h2>
+            <div class="theory-box" id="theoryContent">
+                <!-- Контент подставляется динамически -->
             </div>
+            <button class="btn" onclick="goToTest()">Перейти к тесту (5 баллов)</button>
+        </div>
+
+        <!-- ЭКРАН 3: Тестирование (5 вопросов) -->
+        <div id="screenTest" class="screen">
+            <h2>📝 Тестовые задания (5 баллов)</h2>
+            <p>Выберите один правильный ответ на каждый вопрос.</p>
+            <div id="testContainer"></div>
+            <button class="btn" onclick="submitTest()">Перейти к практическим задачам</button>
+        </div>
+
+        <!-- ЭКРАН 4: Практические задачи (5 вопросов с вводом) -->
+        <div id="screenTasks" class="screen">
+            <h2>✍️️ Задания для решения (5 баллов)</h2>
+            <p>Введите числовые ответы. Дроби вводите через косую черту (например, 3/4) или десятичной дробью (через точку).</p>
+            <div id="tasksContainer"></div>
+            <button class="btn" onclick="submitTasks()">Завершить задания и отправить</button>
+        </div>
+
+        <!-- ЭКРАН 5: Рефлексия и отправка -->
+        <div id="screenReflection" class="screen">
+            <h2>🎯 Рефлексия урока</h2>
+            <p>Оцените уровень усвоения материала:</p>
             
-            <h2 id="lessonTitle" class="text-2xl font-bold text-white mb-4">Название темы</h2>
-            <div id="lessonBody" class="prose prose-invert max-w-none text-slate-300 space-y-4 mb-6 leading-relaxed bg-slate-900/40 p-5 rounded-xl border border-slate-700/40">
-                <!-- Dynamic Lesson Content -->
+            <div class="reflection-options">
+                <button class="reflection-btn" onclick="selectReflection(this, 'Все понял')">🟢 Все понял</button>
+                <button class="reflection-btn" onclick="selectReflection(this, 'Возникли трудности')">🟡 Возникли трудности</button>
+                <button class="reflection-btn" onclick="selectReflection(this, 'Ничего не понял')">🔴 Ничего не понял</button>
             </div>
 
-            <div class="bg-amber-950/30 border border-amber-800/50 rounded-xl p-4 mb-6 text-amber-200 text-sm flex items-start space-x-3">
-                <span class="text-lg">⚠️</span>
-                <div>
-                    <span class="font-semibold">Внимание!</span> При переключении вкладки браузера или сворачивании окна во время тестирования/решения задач вам автоматически будет выставлено 0 баллов за задачи, и работа завершится.
-                </div>
-            </div>
-
-            <button onclick="goToTest()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3.5 px-6 rounded-xl shadow-lg shadow-indigo-600/30 transition-all">
-                Перейти к тесту (5 баллов)
-            </button>
+            <div class="loader" id="loader"></div>
+            <button class="btn" id="finishBtn" onclick="finishAndSend()" disabled>Отправить результаты учителю</button>
         </div>
 
-        <!-- STEP 3: Multiple Choice Test (5 points) -->
-        <div id="stepTest" class="hidden w-full bg-slate-800/60 backdrop-blur-xl border border-slate-700/80 rounded-2xl p-6 md:p-8 shadow-2xl transition-all duration-300">
-            <div class="flex justify-between items-center mb-4 border-b border-slate-700/60 pb-3">
-                <span class="text-xs uppercase tracking-wider text-indigo-400 font-semibold bg-indigo-950/80 px-2.5 py-1 rounded-md border border-indigo-800/50">Шаг 2 из 3 • Тест</span>
-                <span class="text-xs text-slate-400">Каждый правильный ответ = 1 балл (всего 5)</span>
-            </div>
-
-            <h2 class="text-xl font-bold text-white mb-4">Тестовые задания</h2>
-            <form id="testForm" onsubmit="submitTest(event)" class="space-y-6">
-                <div id="testQuestionsContainer" class="space-y-6">
-                    <!-- Dynamic Test Questions -->
-                </div>
-                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3.5 px-6 rounded-xl shadow-lg shadow-indigo-600/30 transition-all">
-                    Отправить ответы и перейти к задачам
-                </button>
-            </form>
+        <!-- ЭКРАН 6: Финал -->
+        <div id="screenResult" class="screen" style="text-align: center;">
+            <h2>🎉 Урок успешно завершен!</h2>
+            <p id="resultSummary" style="font-size: 18px; margin-bottom: 20px;"></p>
+            <p>Ваши результаты записаны в таблицу учителя. Можете закрыть вкладку.</p>
         </div>
-
-        <!-- STEP 4: Problem Solving with Open Inputs (5 points) -->
-        <div id="stepTasks" class="hidden w-full bg-slate-800/60 backdrop-blur-xl border border-slate-700/80 rounded-2xl p-6 md:p-8 shadow-2xl transition-all duration-300">
-            <div class="flex justify-between items-center mb-4 border-b border-slate-700/60 pb-3">
-                <span class="text-xs uppercase tracking-wider text-indigo-400 font-semibold bg-indigo-950/80 px-2.5 py-1 rounded-md border border-indigo-800/50">Шаг 3 из 3 • Решение задач</span>
-                <span class="text-xs text-slate-400">Введите числовые или точные ответы</span>
-            </div>
-
-            <h2 class="text-xl font-bold text-white mb-4">Задания для решения</h2>
-            <form id="tasksForm" onsubmit="submitTasks(event)" class="space-y-6">
-                <div id="openTasksContainer" class="space-y-6">
-                    <!-- Dynamic Open Tasks -->
-                </div>
-                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3.5 px-6 rounded-xl shadow-lg shadow-indigo-600/30 transition-all">
-                    Завершить урок и сдать работу
-                </button>
-            </form>
-        </div>
-
-        <!-- STEP 5: Reflection & Final Score -->
-        <div id="stepReflection" class="hidden w-full bg-slate-800/60 backdrop-blur-xl border border-slate-700/80 rounded-2xl p-6 md:p-8 shadow-2xl transition-all duration-300 text-center">
-            <div class="inline-flex items-center justify-center w-16 h-16 bg-indigo-900/50 border border-indigo-700/60 text-indigo-300 rounded-2xl text-3xl mb-4 shadow-inner">🏆</div>
-            <h2 class="text-2xl font-bold text-white mb-2">Урок завершен!</h2>
-            <p class="text-slate-300 mb-6 text-lg">Ваш итоговый балл: <span id="finalScoreDisplay" class="font-bold text-indigo-400 text-2xl">0</span> из 10</p>
-            
-            <div id="cheatingWarning" class="hidden bg-red-950/40 border border-red-800/50 p-4 rounded-xl text-red-200 text-sm mb-6">
-                ⚠ Зафиксировано сворачивание вкладки или выход из браузера! За последующие задания выставлено 0 баллов, и работа отправлена учителю.
-            </div>
-
-            <div class="bg-slate-900/60 border border-slate-700/60 rounded-xl p-5 mb-6 text-left">
-                <h3 class="font-semibold text-white mb-3">Рефлексия (оцените свое понимание темы):</h3>
-                <div class="space-y-3">
-                    <label class="flex items-center space-x-3 p-3 rounded-xl border border-slate-700/60 bg-slate-800/40 cursor-pointer hover:bg-slate-700/40 transition-all">
-                        <input type="radio" name="reflection" value="Все понял" required class="text-indigo-600 focus:ring-indigo-500 h-4 w-4">
-                        <span class="text-slate-200 font-medium">🟢 Все понял</span>
-                    </label>
-                    <label class="flex items-center space-x-3 p-3 rounded-xl border border-slate-700/60 bg-slate-800/40 cursor-pointer hover:bg-slate-700/40 transition-all">
-                        <input type="radio" name="reflection" value="Возникли трудности" required class="text-indigo-600 focus:ring-indigo-500 h-4 w-4">
-                        <span class="text-slate-200 font-medium">🟡 Возникли трудности</span>
-                    </label>
-                    <label class="flex items-center space-x-3 p-3 rounded-xl border border-slate-700/60 bg-slate-800/40 cursor-pointer hover:bg-slate-700/40 transition-all">
-                        <input type="radio" name="reflection" value="Ничего не понял" required class="text-indigo-600 focus:ring-indigo-500 h-4 w-4">
-                        <span class="text-slate-200 font-medium">🔴 Ничего не понял</span>
-                    </label>
-                </div>
-            </div>
-
-            <button onclick="finishLesson()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-3.5 px-6 rounded-xl shadow-lg shadow-emerald-600/30 transition-all">
-                Отправить результат учителю
-            </button>
-            <div id="sendingStatus" class="mt-3 text-sm text-slate-400"></div>
-        </div>
-
-    </main>
-
-    <footer class="w-full text-center py-4 text-xs text-slate-500 border-t border-slate-800/60">
-        Система дистанционного обучения • Все права защищены
-    </footer>
+    </div>
 
     <script>
-        // Updated Google Apps Script endpoint URL
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxyX6FuTW8jZV_FCYKIJcWFAAPxnYJETaadAjwWHwhag1WSsjBQdaKW8ADQQ8AWEtl1JQ/exec";
-
-        // Application State
-        let studentData = {
-            className: "",
-            fullName: "",
-            testScore: 0,
-            tasksScore: 0,
-            reflection: "",
-            cheated: false
-        };
-
-        // Lesson Data Repository by Grade
-        const lessonsData = {
-            "6 А,Б": {
-                title: "Прямая и обратная пропорциональная зависимость, решение задач",
-                lessonHtml: `
-                    <p><strong>1. Прямая пропорциональная зависимость:</strong> Две величины называются прямо пропорциональными, если при увеличении (или уменьшении) одной величины в несколько раз другая увеличивается (или уменьшается) во столько же раз.</p>
-                    <p><em>Пример:</em> За 2 кг конфет заплатили 800 тенге. Сколько стоят 5 кг таких же конфет? (С ростом массы стоимость растет прямо пропорционально).</p>
-                    <p><strong>2. Обратная пропорциональная зависимость:</strong> Две величины называются обратно пропорциональными, если при увеличении одной величины в несколько раз другая уменьшается во столько же раз.</p>
-                    <p><em>Пример:</em> Автомобиль со скоростью 60 км/ч проехал путь за 4 часа. За какое время проедет этот же путь автомобиль со скоростью 80 км/ч? (С ростом скорости время уменьшается).</p>
-                    <p class="text-indigo-300 font-medium mt-2">💡 Запишите в конспект определения и примеры пропорций, а также правило решения задач с помощью пропорций (крест-накрест).</p>
+        // База данных тем, тестов и задач по классам
+        const curriculum = {
+            "6 А": {
+                subject: "Математика",
+                topic: "Прямая и обратная пропорциональная зависимость, решение задач",
+                theory: `
+                    <p><b>Прямая пропорциональная зависимость:</b> Две величины называются прямо пропорциональными, если при увеличении (уменьшении) одной из них в несколько раз другая увеличивается (уменьшается) во столько же раз. Пример: путь при постоянной скорости ($S = v \\cdot t$).</p>
+                    <p><b>Обратная пропорциональная зависимость:</b> Две величины называются обратно пропорциональными, если при увеличении одной из них в несколько раз другая уменьшается во столько же раз. Пример: время и скорость при постоянном расстоянии ($t = S / v$).</p>
+                    <p><b>Основное свойство пропорции:</b> Произведение крайних членов пропорции равно произведению её средних членов: если $\\frac{a}{b} = \\frac{c}{d}$, то $ad = bc$.</p>
                 `,
                 test: [
-                    {
-                        question: "1. Если при увеличении одной величины в 3 раза вторая тоже увеличивается в 3 раза, то зависимость:",
-                        options: ["Прямая", "Обратная", "Не зависит", "Случайная"],
-                        answer: 0
-                    },
-                    {
-                        question: "2. Какая зависимость между скоростью движения и временем при постоянном расстоянии?",
-                        options: ["Прямая", "Обратная", "Квадратичная", "Никакая"],
-                        answer: 1
-                    },
-                    {
-                        question: "3. За 3 часа поезд прошел 240 км. Какое расстояние он пройдет за 5 часов с той же скоростью?",
-                        options: ["300 км", "400 км", "480 км", "350 км"],
-                        answer: 1
-                    },
-                    {
-                        question: "4. 6 рабочих выполняют работу за 12 дней. За сколько дней выполнят эту же работу 9 рабочих?",
-                        options: ["8 дней", "18 дней", "9 дней", "10 дней"],
-                        answer: 0
-                    },
-                    {
-                        question: "5. Основное свойство пропорции a : b = c : d выражается равенством:",
-                        options: ["a * b = c * d", "a * d = b * c", "a + d = b + c", "a / b = d / c"],
-                        answer: 1
-                    }
+                    { q: "Какая зависимость между скоростью движения автомобиля и временем пути при постоянном расстоянии?", options: ["Прямая пропорциональная", "Обратная пропорциональная", "Зависимости нет"], correct: 1 },
+                    { q: "За 2 часа поезд прошел 140 км. Какой путь он пройдет за 5 часов при той же скорости?", options: ["350 км", "280 км", "300 км"], correct: 0 },
+                    { q: "Решите пропорцию: $\\frac{x}{4} = \\frac{15}{20}$", options: ["3", "4", "5"], correct: 0 },
+                    { q: "Если 3 маляра покрасили забор за 6 дней, за сколько дней покрасят тот же забор 9 маляров?", options: ["18 дней", "2 дня", "3 дня"], correct: 1 },
+                    { q: "Какая зависимость между стоимостью товара и его количеством при постоянной цене?", options: ["Прямая пропорциональная", "Обратная пропорциональная", "Независимые величины"], correct: 0 }
                 ],
                 tasks: [
-                    {
-                        question: "1. За 4 м ткани заплатили 2400 тенге. Сколько тенге стоит 7 м такой же ткани?",
-                        answer: "4200"
-                    },
-                    {
-                        question: "2. Рабочий за 3 смены изготавливает 45 деталей. Сколько деталей он изготовит за 7 смен?",
-                        answer: "105"
-                    },
-                    {
-                        question: "3. Трое рабочих могут покрасить забор за 10 часов. За сколько часов покрасят этот же забор 5 рабочих?",
-                        answer: "6"
-                    },
-                    {
-                        question: "4. Автомобиль проехал расстояние со скоростью 75 км/ч за 4 часа. За сколько часов он проедет это же расстояние со скоростью 100 км/ч?",
-                        answer: "3"
-                    },
-                    {
-                        question: "5. В пропорции 15 : x = 5 : 3 найдите значение x.",
-                        answer: "9"
-                    }
+                    { q: "За 3 кг конфет заплатили 1200 тенге. Сколько тенге стоят 5 кг таких же конфет?", answer: "2000" },
+                    { q: "Рабочий за 4 часа изготавливает 24 детали. Сколько деталей он изготовит за 7 часов?", answer: "42" },
+                    { q: "Автомобиль проехал расстояние со скоростью 60 км/ч за 4 часа. За какое время он проедет это же расстояние со скоростью 80 км/ч? (в часах)", answer: "3" },
+                    { q: "Найдите неизвестный член пропорции: $12 : x = 4 : 5$", answer: "15" },
+                    { q: "Для варки 2 кг варенья требуется 3 кг сахара. Сколько кг сахара нужно для 6 кг варенья?", answer: "9" }
                 ]
             },
-            "9В": {
-                title: "Системы нелинейных уравнений, методы их решения",
-                lessonHtml: `
-                    <p><strong>1. Определение:</strong> Системы уравнений, в которых хотя бы одно уравнение не является линейным (например, содержит степень выше первой, произведение переменных или корни), называются системами нелинейных уравнений.</p>
-                    <p><strong>2. Основные методы решения:</strong></p>
-                    <ul class="list-disc pl-5 space-y-2">
-                        <li><strong>Метод подстановки:</strong> Выражение одной переменной через другую из одного уравнения и подстановка в другое.</li>
-                        <li><strong>Метод сложения:</strong> Умножение уравнений на числа для уничтожения одной из переменной.</li>
-                        <li><strong>Введение новых переменных (замена):</strong> Упрощение вида системы путем обозначения комбинаций переменных через другую букву (например, $u = x+y$, $v = xy$).</li>
-                    </ul>
-                    <p class="text-indigo-300 font-medium mt-2">💡 Запишите в конспект шаги решения систем уравнений второй степени и примеры с заменой переменных.</p>
+            "6 В": {
+                subject: "Математика",
+                topic: "Прямая и обратная пропорциональная зависимость, решение задач",
+                theory: `
+                    <p><b>Прямая пропорциональная зависимость:</b> Величина $y$ прямо пропорциональна $x$, если их отношение постоянно: $y = kx$ ($k > 0$).</p>
+                    <p><b>Обратная пропорциональная зависимость:</b> Величина $y$ обратно пропорциональна $x$, если их произведение постоянно: $xy = k$ или $y = \\frac{k}{x}$.</p>
+                    <p><b>Правило креста для пропорций:</b> Позволяет быстро находить неизвестные компоненты уравнений вида $\\frac{a}{b} = \\frac{c}{x}$.</p>
                 `,
                 test: [
-                    {
-                        question: "1. Сколько решений может иметь система из окружности и прямой?",
-                        options: ["Только 1", "Только 2", "0, 1 или 2", "Бесконечно много"],
-                        answer: 2
-                    },
-                    {
-                        question: "2. Какой метод наиболее эффективен для системы: x + y = 5 и x*y = 6?",
-                        options: ["Графический", "Замена / Подстановка", "Деление уравнений", "Сложение"],
-                        answer: 1
-                    },
-                    {
-                        question: "3. Решением системы x^2 + y^2 = 25 и y = 0 являются пары чисел:",
-                        options: ["(5;0) и (-5;0)", "(0;5) и (0;-5)", "(3;4) и (-3;-4)", "(5;5)"],
-                        answer: 0
-                    },
-                    {
-                        question: "4. Степенью нелинейного уравнения с двумя переменными называется:",
-                        options: ["Степень старшего слагаемого", "Сумма степеней всех слагаемых", "Количество переменных", "Всегда 2"],
-                        answer: 0
-                    },
-                    {
-                        question: "5. Если при решении системы методом подстановки получается верное числовое равенство вида 0=0, то система...",
-                        options: ["Не имеет решений", "Имеет бесконечно много решений", "Имеет ровно 1 решение", "Решена неверно"],
-                        answer: 1
-                    }
+                    { q: "Какая зависимость между стоимостью ткани и её длиной?", options: ["Прямая пропорциональная", "Обратная пропорциональная", "Не определена"], correct: 0 },
+                    { q: "Решите уравнение из пропорции: $\\frac{5}{x} = \\frac{25}{10}$", options: ["2", "5", "125"], correct: 0 },
+                    { q: "Какая зависимость между количеством работников и временем выполнения фиксированного объема работы?", options: ["Прямая пропорциональная", "Обратная пропорциональная", "Зависимости нет"], correct: 1 },
+                    { q: "Если за 4 метра ленты отдали 600 тенге, сколько стоит 7 метров?", options: ["1050", "900", "1200"], correct: 0 },
+                    { q: "Что показывает коэффициент пропорциональности $k$ в формуле $y = kx$?", options: ["Скорость изменения / цену единицы", "Сумму величин", "Разность"], correct: 0 }
                 ],
                 tasks: [
-                    {
-                        question: "1. Найдите сумму x+y для системы: x - y = 2, x*y = 15 (укажите положительную сумму или большее значение суммы, или введите значение x+y для пары с положительными x,y)",
-                        answer: "8"
-                    },
-                    {
-                        question: "2. Решите систему x^2 + y^2 = 13, x*y = 6 в положительных числах. Чему равен x?",
-                        answer: "3"
-                    },
-                    {
-                        question: "3. Найдите ординату y точки пересечения параболы y = x^2 и прямой y = 4 (положительное значение).",
-                        answer: "4"
-                    },
-                    {
-                        question: "4. Сколько решений имеет система: x^2 + y^2 = 4 и x + y = 3? (Введите количество)",
-                        answer: "0"
-                    },
-                    {
-                        question: "5. Решите систему: x^2 - y^2 = 16 и x - y = 2. Чему равен x?",
-                        answer: "5"
-                    }
+                    { q: "За 4 часа насос перекачал 32 м³ воды. Сколько воды перекачает насос за 7 часов?", answer: "56" },
+                    { q: "Длина прямоугольника 12 см, ширина 5 см. Найдите ширину другого прямоугольника с той же площадью, если его длина равна 15 см.", answer: "4" },
+                    { q: "Найдите неизвестный член пропорции: $x : 8 = 15 : 20$", answer: "6" },
+                    { q: "За 6 тетрадей заплатили 900 тенге. Сколько стоят 10 таких тетрадей?", answer: "1500" },
+                    { q: "Бригада из 6 рабочих выполнила ремонт школы за 10 дней. За сколько дней выполнат ту же работу 12 рабочих?", answer: "5" }
+                ]
+            },
+            "9 В": {
+                subject: "Геометрия",
+                topic: "Векторы, действия над векторами",
+                theory: `
+                    <p><b>Вектор</b> — это направленный отрезок. Обозначается $\\vec{a}$ или $\\overline{AB}$. Длина вектора (модуль) — длина отрезка $AB$.</p>
+                    <p><b>Сложение векторов:</b> Правило треугольника (конец первого соединяется с началом второго) и правило параллелограмма.</p>
+                    <p><b>Координаты вектора:</b> Если $A(x_1, y_1)$ и $B(x_2, y_2)$, то координаты вектора $\\vec{AB} = (x_2 - x_1; y_2 - y_1)$.</p>
+                    <p><b>Умножение на число:</b> При умножении вектора $\\vec{a}(x; y)$ на число $k$, его координаты умножаются на $k$: $k\\vec{a} = (kx; ky)$.</p>
+                `,
+                test: [
+                    { q: "Чему равна длина вектора $\\vec{a}(3; 4)$?", options: ["5", "7", "25"], correct: 0 },
+                    { q: "Дан вектор $\\vec{a}(2; -3)$ и $\\vec{b}(4; 5)$. Найдите координаты суммы векторов $\\vec{a} + \\vec{b}$.", options: ["(6; 2)", "(2; 8)", "(8; -15)"], correct: 0 },
+                    { q: "Два не нулевых вектора коллинеарны, если они...", options: ["Лежат на параллельных прямых или одной прямой", "Перпендикулярны", "Имеют равные длины"], correct: 0 },
+                    { q: "Чему равен скалярный квадрат вектора?", options: ["Квадрату его длины", "Модулю вектора", "Нулю"], correct: 0 },
+                    { q: "Если координаты начала вектора $A(1; 2)$ и конца $B(4; 6)$, каковы координаты вектора $\\vec{AB}$?", options: ["(3; 4)", "(5; 8)", "(-3; -4)"], correct: 0 }
+                ],
+                tasks: [
+                    { q: "Найдите длину вектора $\\vec{a}(-5; 12)$.", answer: "13" },
+                    { q: "Даны векторы $\\vec{a}(3; -2)$ и $\\vec{b}(-1; 5)$. Найдите абсциссу (первую координату) вектора $\\vec{c} = 2\\vec{a} + \\vec{b}$.", answer: "5" },
+                    { q: "Найдите скалярное произведение векторов $\\vec{a}(2; 3)$ и $\\vec{b}(4; -5)$.", answer: "-7" },
+                    { q: "Найдите ординату (вторую координату) вектора $\\vec{AB}$, если $A(2; 3)$ и $B(5; 7)$.", answer: "4" },
+                    { q: "При каком значении $k$ векторы $\\vec{a}(2; 6)$ и $\\vec{b}(1; k)$ коллинеарны?", answer: "3" }
                 ]
             },
             "11 А": {
-                title: "Неопределенный интеграл",
-                lessonHtml: `
-                    <p><strong>1. Первообразная:</strong> Функция $F(x)$ называется первообразной для функции $f(x)$ на заданном промежутке, если $F'(x) = f(x)$.</p>
-                    <p><strong>2. Неопределенный интеграл:</strong> Совокупность всех первообразных функции $f(x)$ называется неопределенным интегралом и обозначается:</p>
-                    <div class="bg-slate-900/80 p-3 rounded-lg text-center font-mono text-indigo-300">∫ f(x) dx = F(x) + C</div>
-                    <p><strong>3. Основные свойства и формулы:</strong></p>
-                    <ul class="list-disc pl-5 space-y-1">
-                        <li>∫ x^n dx = (x^(n+1)) / (n+1) + C  (при n ≠ -1)</li>
-                        <li>∫ e^x dx = e^x + C</li>
-                        <li>∫ sin(x) dx = -cos(x) + C</li>
-                    </ul>
-                    <p class="text-indigo-300 font-medium mt-2">💡 Запишите таблицу основных интегралов и правила линейности интеграла в конспект.</p>
+                subject: "Геометрия",
+                topic: "Многогранники (призмы, пирамиды, свойства)",
+                theory: `
+                    <p><b>Многогранник</b> — тело, ограниченное конечным числом плоских многоугольников (граней).</p>
+                    <p><b>Призма</b> — многогранник, у которого две грани (основания) равные многоугольники, лежащие в параллельных плоскостях, а остальные грани — параллелограммы.</p>
+                    <p><b>Пирамида</b> — многогранник, основание которого — многоугольник, а остальные грани — треугольники с общей вершиной.</p>
+                    <p><b>Теорема Эйлера для выпуклых многогранников:</b> В - Р + Г = 2 (где В — вершины, Р — ребра, Г — грани).</p>
                 `,
                 test: [
-                    {
-                        question: "1. Что такое C в записи неопределенного интеграла F(x) + C?",
-                        options: ["Константа скорости", "Произвольная постоянная", "Коэффициент дифференцирования", "Случайное число"],
-                        answer: 1
-                    },
-                    {
-                        question: "2. Чему равен интеграл ∫ x^4 dx?",
-                        options: ["4x^3 + C", "(x^5)/5 + C", "5x^5 + C", "(x^4)/4 + C"],
-                        answer: 1
-                    },
-                    {
-                        question: "3. Интеграл от суммы двух функций равен:",
-                        options: ["Произведению интегралов", "Сумме их неопределенных интегралов", "Разности интегралов", "Нулю"],
-                        answer: 1
-                    },
-                    {
-                        question: "4. Чему равен интеграл ∫ 5 dx?",
-                        options: ["5 + C", "5x + C", "x + C", "0"],
-                        answer: 1
-                    },
-                    {
-                        question: "5. Какая функция является первообразной для f(x) = cos(x)?",
-                        options: ["-sin(x)", "sin(x)", "cos(x)", "-cos(x)"],
-                        answer: 1
-                    }
+                    { q: "Сколько граней у пятиугольной призмы?", options: ["7", "5", "10"], correct: 0 },
+                    { q: "Чему равна сумма плоских углов при вершине правильной треугольной пирамиды, если боковые грани — равносторонние треугольники?", options: ["180°", "270°", "360°"], correct: 0 },
+                    { q: "Если у многогранника 6 вершин и 12 ребер, сколько у него граней (по формуле Эйлера)?", options: ["8", "6", "10"], correct: 0 },
+                    { q: "Основанием прямого параллелепипеда является...", options: ["Произвольный параллелограмм", "Прямоугольник", "Квадрат"], correct: 0 },
+                    { q: "Как называется призма, боковые ребра которой перпендикулярны основаниям?", options: ["Прямая", "Правильная", "Наклонная"], correct: 0 }
                 ],
                 tasks: [
-                    {
-                        question: "1. Вычислите интеграл ∫ 3x^2 dx. Введите коэффициент при x^3 (например, если получается 3x^3, введите 3).",
-                        answer: "1"
-                    },
-                    {
-                        question: "2. Найдите значение интеграла ∫ 2 dx на отрезке [0, 4]? (Или значение ∫ 2 dx = 2x. Чему равен коэффициент при x?)",
-                        answer: "2"
-                    },
-                    {
-                        question: "3. Чему равен коэффициент перед x^4 при интегрировании выражения ∫ 4x^3 dx?",
-                        answer: "1"
-                    },
-                    {
-                        question: "4. Найдите ∫ e^x dx. Чему равен коэффициент перед e^x?",
-                        answer: "1"
-                    },
-                    {
-                        question: "5. Вычислите ∫ 6x^5 dx. Чему равен коэффициент перед x^6?",
-                        answer: "1"
-                    }
+                    { q: "Сколько ребер у четырехугольной пирамиды?", answer: "8" },
+                    { q: "Сколько вершин у шестиугольной призмы?", answer: "12" },
+                    { q: "Найдите число граней правильной треугольной пирамиды.", answer: "4" },
+                    { q: "Сколько диагоналей у куба?", answer: "4" },
+                    { q: "Если у многогранника 10 вершин и 15 ребер, сколько у него граней?", answer: "7" }
                 ]
             },
             "11 б": {
-                title: "Неопределенный интеграл, метод замены переменных",
-                lessonHtml: `
-                    <p><strong>1. Метод замены переменной (интегрирование под знаком дифференциала):</strong></p>
-                    <p>Если интеграл ∫ f(g(x)) * g'(x) dx сложно вычислить напрямую, делают замену переменной $t = g(x)$, тогда $dt = g'(x) dx$.</p>
-                    <p><strong>2. Алгоритм метода:</strong></p>
-                    <ol class="list-decimal pl-5 space-y-1">
-                        <li>Выбрать удобную часть подынтегральной функции за новую переменную $t$.</li>
-                        <li>Выразить дифференциал $dx$ через $dt$.</li>
-                        <li>Подставить выражение в интеграл и найти табличный интеграл от новой переменной $t$.</li>
-                        <li>Выполнить обратную замену (подставить вместо $t$ исходное выражение от $x$).</li>
-                    </ol>
-                    <p class="text-indigo-300 font-medium mt-2">💡 Запишите примеры применения замен для сложных тригонометрических и степенных функций в конспект.</p>
+                subject: "Геометрия",
+                topic: "Многогранники (призмы, пирамиды, свойства)",
+                theory: `
+                    <p><b>Правильный многогранник</b> — выпуклый многогранник, у которого все грани равные правильные многоугольники, и в каждой вершине сходится одно и то же число рёбер.</p>
+                    <p>Существует ровно 5 видов правильных многогранников (платоновых тел): тетраэдр, куб, октаэдр, додекаэдр, икосаэдр.</p>
+                    <p><b>Объем призмы:</b> $V = S_{осн} \\cdot h$.</p>
+                    <p><b>Объем пирамиды:</b> $V = \\frac{1}{3} S_{осн} \\cdot h$.</p>
                 `,
                 test: [
-                    {
-                        question: "1. Метод замены переменной в неопределенном интеграле основан на формуле производной какой функции?",
-                        options: ["Сложной функции", "Обратной функции", "Произведения функций", "Частного функций"],
-                        answer: 0
-                    },
-                    {
-                        question: "2. При вычислении ∫ (2x + 1)^4 * 2 dx какая замена наиболее естественна?",
-                        options: ["t = x", "t = 2x + 1", "t = x^2", "t = 4"],
-                        answer: 1
-                    },
-                    {
-                        question: "3. Дифференциал dt для функции t = x^2 + 5 равен:",
-                        options: ["2x dx", "x dx", "2 dx", "x^2 dx"],
-                        answer: 0
-                    },
-                    {
-                        question: "4. Интеграл ∫ e^(2x) dx с помощью замены t = 2x сводится к интегралу:",
-                        options: ["(1/2) ∫ e^t dt", "2 ∫ e^t dt", "∫ e^t dt", "∫ t e^t dt"],
-                        answer: 0
-                    },
-                    {
-                        question: "5. Зачем применяется замена переменной в интегралах?",
-                        options: ["Для усложнения", "Для сведения к табличному интегралу", "Для уничтожения интеграла", "Для проверки ответа"],
-                        answer: 1
-                    }
+                    { q: "Сколько граней у октаэдра?", options: ["8", "6", "12"], correct: 0 },
+                    { q: "Какая геометрическая фигура лежит в основании правильной четырехугольной пирамиды?", options: ["Квадрат", "Прямоугольник", "Ромб"], correct: 0 },
+                    { q: "Чему равен объем пирамиды с площадью основания 12 и высотой 6?", options: ["24", "72", "36"], correct: 0 },
+                    { q: "Сколько вершин у икосаэдра?", options: ["12", "20", "30"], correct: 0 },
+                    { q: "Если боковое ребро наклонной призмы равно 10, а угол наклона к плоскости основания равен 30 градусов, найдите высоту призмы.", options: ["5", "10", "5√3"], correct: 0 }
                 ],
                 tasks: [
-                    {
-                        question: "1. Найдите ∫ (x+3)^4 dx. Какой коэффициент образуется перед скобкой после интегрирования (1 разделить на степень)? Введите число 5.",
-                        answer: "5"
-                    },
-                    {
-                        question: "2. Вычислите коэффициент перед e^(3x) при интегрировании ∫ 3*e^(3x) dx.",
-                        answer: "1"
-                    },
-                    {
-                        question: "3. При вычислении ∫ 2x * (x^2 + 1)^3 dx заменой t = x^2+1 получается интеграл ∫ t^3 dt. Каков коэффициент перед t^4 в результате?",
-                        answer: "0.25"
-                    },
-                    {
-                        question: "4. Чему равен коэффициент k в формуле ∫ f(kx+b) dx = (1/k) * F(kx+b) для ∫ cos(5x) dx?",
-                        answer: "5"
-                    },
-                    {
-                        question: "5. Найдите значение интеграла ∫ 2x dx / (x^2+1) (если ответ равен ln(x^2+1), введите число 1 как коэффициент).",
-                        answer: "1"
-                    }
+                    { q: "Найдите объем призмы, если площадь ее основания равна 15, а высота равна 4.", answer: "60" },
+                    { q: "Найдите объем пирамиды, если площадь ее основания равна 9, а высота равна 7.", answer: "21" },
+                    { q: "Сколько ребер у октаэдра?", answer: "12" },
+                    { q: "Сколько граней у куба?", answer: "6" },
+                    { q: "Найдите высоту пирамиды, если ее объем равен 40, а площадь основания равна 15? Ответ округлите до целых, если получится целое, либо введите дробь.", answer: "8" }
                 ]
             }
         };
 
-        // Anti-Cheat: Detect Tab Swishing / Visibility Change / Blur during test or tasks
-        document.addEventListener("visibilitychange", () => {
-            if (document.hidden && !studentData.cheated) {
-                const stepTestVisible = !document.getElementById("stepTest").classList.contains("hidden");
-                const stepTasksVisible = !document.getElementById("stepTasks").classList.contains("hidden");
-                const stepLessonVisible = !document.getElementById("stepLesson").classList.contains("hidden");
-                const stepRegVisible = !document.getElementById("stepRegistration").classList.contains("hidden");
+        let state = {
+            selectedClass: null,
+            studentName: "",
+            testAnswers: {},
+            taskAnswers: {},
+            reflection: null,
+            scoreTest: 0,
+            scoreTasks: 0,
+            cheated: false
+        };
 
-                if ((stepTestVisible || stepTasksVisible || stepLessonVisible) && !stepRegVisible) {
-                    triggerCheatingPenalty();
-                }
-            }
+        // Выбор класса
+        const classButtons = document.querySelectorAll('.class-btn');
+        const studentNameInput = document.getElementById('studentName');
+        const startBtn = document.getElementById('startBtn');
+
+        classButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                classButtons.forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                state.selectedClass = btn.dataset.class;
+                checkReady();
+            });
         });
 
-        window.addEventListener("blur", () => {
-            if (!studentData.cheated) {
-                const stepTestVisible = !document.getElementById("stepTest").classList.contains("hidden");
-                const stepTasksVisible = !document.getElementById("stepTasks").classList.contains("hidden");
-                const stepLessonVisible = !document.getElementById("stepLesson").classList.contains("hidden");
-                const stepRegVisible = !document.getElementById("stepRegistration").classList.contains("hidden");
-
-                if ((stepTestVisible || stepTasksVisible || stepLessonVisible) && !stepRegVisible) {
-                    triggerCheatingPenalty();
-                }
-            }
+        studentNameInput.addEventListener('input', (e) => {
+            state.studentName = e.target.value.trim();
+            checkReady();
         });
 
-        function triggerCheatingPenalty() {
-            if (studentData.cheated) return;
-            studentData.cheated = true;
-            studentData.tasksScore = 0; // Penalty: 0 points for tasks
-            document.getElementById("cheatingWarning").classList.remove("hidden");
-            
-            // Auto jump directly to reflection / final results & auto transmit
-            goToReflection();
-            
-            // Auto submit immediately as requested by anti-cheat rules
-            setTimeout(() => {
-                // Set default reflection if none picked due to quick penalty redirection
-                const reflectionRadio = document.querySelector('input[name="reflection"]:checked');
-                if (!reflectionRadio) {
-                    // Default to neutral/difficult if cheated
-                    const radios = document.querySelectorAll('input[name="reflection"]');
-                    if (radios[1]) radios[1].checked = true;
-                    studentData.reflection = "Возникли трудности (штраф античита)";
-                }
-                sendDataToGoogleSheets(true);
-            }, 800);
+        function checkReady() {
+            if (state.selectedClass && state.studentName.length >= 2) {
+                startBtn.disabled = false;
+            } else {
+                startBtn.disabled = true;
+            }
         }
 
-        // Start Lesson Handler
-        function startLesson(event) {
-            event.preventDefault();
-            const selectedClassRadio = document.querySelector('input[name="studentClass"]:checked');
-            const nameInput = document.getElementById("studentName").value.trim();
-
-            if (!selectedClassRadio || !nameInput) return;
-
-            studentData.className = selectedClassRadio.value;
-            studentData.fullName = nameInput;
-
-            // Update Header info
-            document.getElementById("displayClass").innerText = studentData.className;
-            document.getElementById("displayName").innerText = studentData.fullName;
-            document.getElementById("userInfoHeader").classList.remove("hidden");
-            document.getElementById("headerTitle").innerText = "Конспект и изучение темы";
-
-            // Populate Lesson Content
-            const lesson = lessonsData[studentData.className];
-            document.getElementById("lessonTitle").innerText = lesson.title;
-            document.getElementById("lessonBody").innerHTML = lesson.lessonHtml;
-
-            // Switch UI steps
-            document.getElementById("stepRegistration").classList.add("hidden");
-            document.getElementById("stepLesson").classList.remove("hidden");
+        // Запуск урока
+        function startLesson() {
+            const data = curriculum[state.selectedClass];
+            document.getElementById('theoryTitle').innerText = `${state.selectedClass}: ${data.topic}`;
+            document.getElementById('theoryContent').innerHTML = data.theory;
+            
+            switchScreen('screenTheory');
+            
+            // Рендер формул MathJax
+            if (window.MathJax) {
+                MathJax.typeset();
+            }
+            
+            enableAntiCheat();
         }
 
-        // Transition to Test Step
         function goToTest() {
-            document.getElementById("stepLesson").classList.add("hidden");
-            document.getElementById("stepTest").classList.remove("hidden");
-            document.getElementById("headerTitle").innerText = "Тестовые задания (5 баллов)";
+            renderTest();
+            switchScreen('screenTest');
+            if (window.MathJax) MathJax.typeset();
+        }
 
-            // Build Test Questions HTML
-            const lesson = lessonsData[studentData.className];
-            const container = document.getElementById("testQuestionsContainer");
-            container.innerHTML = "";
-
-            lesson.test.forEach((q, qIdx) => {
-                let optionsHtml = "";
-                q.options.forEach((opt, oIdx) => {
-                    optionsHtml += `
-                        <label class="flex items-center space-x-3 p-3 rounded-xl border border-slate-700/60 bg-slate-900/40 cursor-pointer hover:bg-slate-700/40 transition-all">
-                            <input type="radio" name="q_${qIdx}" value="${oIdx}" required class="text-indigo-600 focus:ring-indigo-500 h-4 w-4">
-                            <span class="text-slate-200 text-sm">${opt}</span>
+        // Рендер тестов
+        function renderTest() {
+            const container = document.getElementById('testContainer');
+            const questions = curriculum[state.selectedClass].test;
+            let html = '';
+            
+            questions.forEach((item, index) => {
+                html += `
+                    <div class="question-card">
+                        <p><b>Вопрос ${index + 1}.</b> ${item.q}</p>
+                        <div class="options-list">
+                `;
+                item.options.forEach((opt, optIndex) => {
+                    html += `
+                        <label class="option-label">
+                            <input type="radio" name="test_${index}" value="${optIndex}" onchange="saveTestAnswer(${index}, ${optIndex})">
+                            ${opt}
                         </label>
                     `;
                 });
-
-                container.innerHTML += `
-                    <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-700/60">
-                        <p class="font-medium text-white mb-3 text-sm md:text-base">${q.question}</p>
-                        <div class="space-y-2">${optionsHtml}</div>
-                    </div>
-                `;
+                html += `</div></div>`;
             });
+            container.innerHTML = html;
         }
 
-        // Submit Test Handler
-        function submitTest(event) {
-            event.preventDefault();
-            const lesson = lessonsData[studentData.className];
-            let score = 0;
+        function saveTestAnswer(qIndex, optIndex) {
+            state.testAnswers[qIndex] = optIndex;
+        }
 
-            lesson.test.forEach((q, qIdx) => {
-                const selectedOpt = document.querySelector(`input[name="q_${qIdx}"]:checked`);
-                if (selectedOpt && parseInt(selectedOpt.value) === q.answer) {
+        function submitTest() {
+            const questions = curriculum[state.selectedClass].test;
+            let score = 0;
+            questions.forEach((item, index) => {
+                if (state.testAnswers[index] === item.correct) {
                     score += 1;
                 }
             });
-
-            studentData.testScore = score;
-
-            // Switch to Open Tasks Step
-            document.getElementById("stepTest").classList.add("hidden");
-            document.getElementById("stepTasks").classList.remove("hidden");
-            document.getElementById("headerTitle").innerText = "Решение задач (5 баллов)";
-
-            // Build Tasks HTML
-            const tasksContainer = document.getElementById("openTasksContainer");
-            tasksContainer.innerHTML = "";
-
-            lesson.tasks.forEach((t, tIdx) => {
-                tasksContainer.innerHTML += `
-                    <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-700/60">
-                        <p class="font-medium text-white mb-3 text-sm md:text-base">${t.question}</p>
-                        <input type="text" name="task_${tIdx}" required placeholder="Введите ответ..." 
-                               class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
-                    </div>
-                `;
-            });
-        }
-
-        // Submit Tasks Handler
-        function submitTasks(event) {
-            event.preventDefault();
-            if (studentData.cheated) {
-                goToReflection();
-                return;
-            }
-
-            const lesson = lessonsData[studentData.className];
-            let score = 0;
-
-            lesson.tasks.forEach((t, tIdx) => {
-                const inputEl = document.querySelector(`input[name="task_${tIdx}"]`);
-                const userAns = inputEl ? inputEl.value.trim().toLowerCase() : "";
-                const correctAns = t.answer.toLowerCase();
-                if (userAns === correctAns) {
-                    score += 1;
-                }
-            });
-
-            studentData.tasksScore = score;
-            goToReflection();
-        }
-
-        // Jump to Reflection Step
-        function goToReflection() {
-            document.getElementById("stepLesson").classList.add("hidden");
-            document.getElementById("stepTest").classList.add("hidden");
-            document.getElementById("stepTasks").classList.add("hidden");
-            document.getElementById("stepReflection").classList.remove("hidden");
-            document.getElementById("headerTitle").innerText = "Итоги урока и рефлексия";
-
-            const total = studentData.testScore + studentData.tasksScore;
-            document.getElementById("finalScoreDisplay").innerText = total;
+            state.scoreTest = score;
             
-            if (studentData.cheated) {
-                document.getElementById("cheatingWarning").classList.remove("hidden");
-            }
+            renderTasks();
+            switchScreen('screenTasks');
+            if (window.MathJax) MathJax.typeset();
         }
 
-        // Manual Finish Button Handler
-        function finishLesson() {
-            const reflectionRadio = document.querySelector('input[name="reflection"]:checked');
-            if (!reflectionRadio && !studentData.cheated) {
-                alert("Пожалуйста, выберите вариант рефлексии.");
-                return;
-            }
-
-            if (reflectionRadio) {
-                studentData.reflection = reflectionRadio.value;
-            }
-
-            sendDataToGoogleSheets(false);
+        // Рендер задач
+        function renderTasks() {
+            const container = document.getElementById('tasksContainer');
+            const tasks = curriculum[state.selectedClass].tasks;
+            let html = '';
+            
+            tasks.forEach((item, index) => {
+                html += `
+                    <div class="question-card">
+                        <p><b>Задача ${index + 1}.</b> ${item.q}</p>
+                        <input type="text" id="task_input_${index}" placeholder="Введите ответ..." style="margin-top: 10px;">
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
         }
 
-        // Core Sender function to Google Sheets
-        function sendDataToGoogleSheets(isAutomaticAntiCheat = false) {
-            const totalScore = studentData.testScore + studentData.tasksScore;
-            const statusEl = document.getElementById("sendingStatus");
-            if (statusEl) {
-                statusEl.innerText = "Отправка данных учителю...";
-            }
+        function submitTasks() {
+            if (state.cheated) return;
+            const tasks = curriculum[state.selectedClass].tasks;
+            let score = 0;
+            
+            tasks.forEach((item, index) => {
+                const val = document.getElementById(`task_input_${index}`).value.trim().replace(',', '.');
+                state.taskAnswers[index] = val;
+                if (val === item.answer) {
+                    score += 1;
+                }
+            });
+            state.scoreTasks = score;
+            
+            switchScreen('screenReflection');
+        }
 
+        // Античит система
+        function enableAntiCheat() {
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden && !state.cheated) {
+                    triggerCheat();
+                }
+            });
+
+            window.addEventListener('blur', () => {
+                if (!state.cheated) {
+                    triggerCheat();
+                }
+            });
+        }
+
+        function triggerCheat() {
+            state.cheated = true;
+            state.scoreTasks = 0; // Штраф 0 баллов за задачи
+            document.getElementById('cheatAlert').style.display = 'flex';
+            
+            // Автоматически отправляем данные о нарушении в таблицу
+            sendDataToSheets(true);
+        }
+
+        // Рефлексия
+        function selectReflection(btn, text) {
+            document.querySelectorAll('.reflection-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            state.reflection = text;
+            document.getElementById('finishBtn').disabled = false;
+        }
+
+        function finishAndSend() {
+            sendDataToSheets(false);
+        }
+
+        // Отправка в Google Таблицы (через text/plain во избежание CORS preflight)
+        function sendDataToSheets(isCheated) {
+            const webhookUrl = "https://script.google.com/macros/s/AKfycbxyX6FuTW8jZV_FCYKIJcWFAAPxnYJETaadAjwWHwhag1WSsjBQdaKW8ADQQ8AWEtl1JQ/exec";
+            
+            const totalScore = state.scoreTest + state.scoreTasks;
             const payload = {
-                className: String(studentData.className || ""),
-                fullName: String(studentData.fullName || ""),
-                testScore: Number(studentData.testScore || 0),
-                tasksScore: Number(studentData.tasksScore || 0),
-                totalScore: Number(totalScore || 0),
-                reflection: String(studentData.reflection || "Не указана"),
-                cheated: studentData.cheated ? "Да" : "Нет",
-                timestamp: new Date().toLocaleString()
+                timestamp: new Date().toLocaleString(),
+                studentClass: state.selectedClass,
+                fullName: state.studentName,
+                scoreTest: state.scoreTest,
+                scoreTasks: state.scoreTasks,
+                totalScore: totalScore,
+                reflection: isCheated ? "Нарушение (свернул вкладку)" : (state.reflection || "Не указано"),
+                status: isCheated ? "Штраф (0 за задачи)" : "Завершено"
             };
 
-            // Using text/plain to bypass CORS preflight restrictions on Google Apps Script Web App endpoints
-            fetch(SCRIPT_URL, {
+            document.getElementById('loader').style.display = 'block';
+            document.getElementById('finishBtn').disabled = true;
+
+            fetch(webhookUrl, {
                 method: "POST",
                 mode: "no-cors",
                 headers: {
-                    "Content-Type": "text/plain;charset=utf-8"
+                    "Content-Type": "text/plain;charset=utf-8",
                 },
                 body: JSON.stringify(payload)
             }).then(() => {
-                if (statusEl) {
-                    statusEl.innerText = isAutomaticAntiCheat 
-                        ? "⚠ Зафиксировано сворачивание вкладки! Работа автоматически отправлена." 
-                        : "✅ Результаты успешно отправлены в таблицу учителя!";
-                    statusEl.classList.add("text-emerald-400");
+                document.getElementById('loader').style.display = 'none';
+                if (!isCheated) {
+                    showResultScreen(totalScore);
                 }
-            }).catch((err) => {
-                console.error("Submission error:", err);
-                if (statusEl) {
-                    statusEl.innerText = "✅ Данные зафиксированы и переданы!";
-                    statusEl.classList.add("text-emerald-400");
+            }).catch(err => {
+                console.error("Ошибка отправки:", err);
+                document.getElementById('loader').style.display = 'none';
+                if (!isCheated) {
+                    showResultScreen(totalScore);
                 }
             });
+        }
+
+        function showResultScreen(total) {
+            document.getElementById('resultSummary').innerText = 
+                `${state.studentName} (${state.selectedClass})\nТест: ${state.scoreTest}/5 | Задачи: ${state.scoreTasks}/5\nИтоговый балл: ${total} / 10`;
+            switchScreen('screenResult');
+        }
+
+        function switchScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
         }
     </script>
 </body>
