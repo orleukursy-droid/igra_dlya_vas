@@ -275,7 +275,7 @@
 
     <div id="cheatAlert" class="cheat-alert">
         <h2>⚠ Нарушение правил урока!</h2>
-        <p>Вы свернули браузер или открыли новую вкладку. По условиям тестирования вам выставлено 0 баллов за практические задания, и урок завершен досрочно.</p>
+        <p>Вы свернули браузер или открыли новую вкладку во время выполнения задач. По условиям тестирования вам выставлено 0 баллов за практические задания, и урок завершен досрочно.</p>
         <button class="btn" style="background: white; color: var(--danger); width: auto; margin-top: 20px;" onclick="location.reload()">Начать заново</button>
     </div>
 
@@ -322,7 +322,7 @@
         <!-- ЭКРАН 4: Задачи -->
         <div id="screenTasks" class="screen">
             <h2>✍ Задания для решения (5 баллов)</h2>
-            <p>Введите числовые ответы. Десятичные дроби вводите через точку.</p>
+            <p><b>Внимание:</b> во время решения задач запрещено сворачивать вкладку или переключаться на другие окна!</p>
             <div id="tasksContainer"></div>
             <button class="btn" onclick="submitTasks()">Завершить задания и отправить</button>
         </div>
@@ -480,7 +480,8 @@
             reflection: null,
             scoreTest: 0,
             scoreTasks: 0,
-            cheated: false
+            cheated: false,
+            antiCheatActive: false
         };
 
         const classButtons = document.querySelectorAll('.class-btn');
@@ -522,7 +523,6 @@
             
             switchScreen('screenTheory');
             setTimeout(triggerMathJax, 50);
-            enableAntiCheat();
         }
 
         function goToTest() {
@@ -572,6 +572,7 @@
             renderTasks();
             switchScreen('screenTasks');
             setTimeout(triggerMathJax, 50);
+            enableAntiCheat(); // Античит включается строго при переходе к задачам
         }
 
         function renderTasks() {
@@ -592,6 +593,8 @@
 
         function submitTasks() {
             if (state.cheated) return;
+            disableAntiCheat(); // Отключаем античит перед выходом с экрана задач
+            
             const tasks = curriculum[state.selectedClass].tasks;
             let score = 0;
             
@@ -608,22 +611,34 @@
         }
 
         function enableAntiCheat() {
-            document.addEventListener('visibilitychange', () => {
-                if (document.hidden && !state.cheated) {
-                    triggerCheat();
-                }
-            });
+            state.antiCheatActive = true;
+            
+            document.addEventListener('visibilitychange', handleVisibilityChange);
+            window.addEventListener('blur', handleBlur);
+        }
 
-            window.addEventListener('blur', () => {
-                if (!state.cheated) {
-                    triggerCheat();
-                }
-            });
+        function disableAntiCheat() {
+            state.antiCheatActive = false;
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+            window.removeEventListener('blur', handleBlur);
+        }
+
+        function handleVisibilityChange() {
+            if (document.hidden && state.antiCheatActive && !state.cheated) {
+                triggerCheat();
+            }
+        }
+
+        function handleBlur() {
+            if (state.antiCheatActive && !state.cheated) {
+                triggerCheat();
+            }
         }
 
         function triggerCheat() {
             state.cheated = true;
             state.scoreTasks = 0;
+            disableAntiCheat();
             document.getElementById('cheatAlert').style.display = 'flex';
             sendDataToSheets(true);
         }
