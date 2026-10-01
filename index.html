@@ -275,7 +275,7 @@
 
     <div id="cheatAlert" class="cheat-alert">
         <h2>⚠ Нарушение правил урока!</h2>
-        <p>Вы свернули браузер или открыли новую вкладку во время выполнения задач. По условиям тестирования вам выставлено 0 баллов за практические задания, и урок завершен досрочно.</p>
+        <p>Вы свернули браузер или открыли новую вкладку во время выполнения практических задач. По условиям тестирования вам выставлено 0 баллов за задачи, и результат отправлен учителю.</p>
         <button class="btn" style="background: white; color: var(--danger); width: auto; margin-top: 20px;" onclick="location.reload()">Начать заново</button>
     </div>
 
@@ -322,7 +322,7 @@
         <!-- ЭКРАН 4: Задачи -->
         <div id="screenTasks" class="screen">
             <h2>✍ Задания для решения (5 баллов)</h2>
-            <p><b>Внимание:</b> во время решения задач запрещено сворачивать вкладку или переключаться на другие окна!</p>
+            <p><b>Внимание:</b> во время решения практических задач запрещено сворачивать вкладку или переключаться на другие окна!</p>
             <div id="tasksContainer"></div>
             <button class="btn" onclick="submitTasks()">Завершить задания и отправить</button>
         </div>
@@ -572,7 +572,7 @@
             renderTasks();
             switchScreen('screenTasks');
             setTimeout(triggerMathJax, 50);
-            enableAntiCheat(); // Античит включается строго при переходе к задачам
+            enableAntiCheat(); // Античит активируется строго во время задач
         }
 
         function renderTasks() {
@@ -593,7 +593,7 @@
 
         function submitTasks() {
             if (state.cheated) return;
-            disableAntiCheat(); // Отключаем античит перед выходом с экрана задач
+            disableAntiCheat(); // Деактивируем античит перед выходом
             
             const tasks = curriculum[state.selectedClass].tasks;
             let score = 0;
@@ -612,7 +612,6 @@
 
         function enableAntiCheat() {
             state.antiCheatActive = true;
-            
             document.addEventListener('visibilitychange', handleVisibilityChange);
             window.addEventListener('blur', handleBlur);
         }
@@ -655,7 +654,7 @@
         }
 
         function sendDataToSheets(isCheated) {
-            const webhookUrl = "https://script.google.com/macros/s/AKfycbxyX6FuTW8jZV_FCYKIJcWFAAPxnYJETaadAjwWHwhag1WSsjBQdaKW8ADQQ8AWEtl1JQ/exec";
+            const webhookUrl = "https://script.google.com/macros/s/AKfycbyuDDZAY8faVora0wB9leMT6BXHVUionrQQiNUOgNj89one_-OSezLpV-i0XuSF50FFaA/exec";
             
             const totalScore = state.scoreTest + state.scoreTasks;
             const payload = {
@@ -665,7 +664,7 @@
                 scoreTest: state.scoreTest,
                 scoreTasks: state.scoreTasks,
                 totalScore: totalScore,
-                reflection: isCheated ? "Нет" : (state.reflection || "Не указано"),
+                reflection: isCheated ? "Не указано (Нарушение)" : (state.reflection || "Не указано"),
                 antiCheat: isCheated ? "Нарушение (свернул вкладку)" : "Нет"
             };
 
