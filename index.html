@@ -3,705 +3,255 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Дистанционный урок — Математика и Геометрия</title>
-    <!-- Настройка MathJax для корректного отображения формул -->
-    <script>
-        window.MathJax = {
-            tex: {
-                inlineMath: [['$', '$'], ['\\(', '\\)']],
-                displayMath: [['$$', '$$'], ['\\[', '\\]']]
-            },
-            svg: {
-                fontCache: 'global'
-            }
-        };
-    </script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <title>Антистресс для Математика</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary: #4f46e5;
-            --primary-hover: #4338ca;
-            --bg-color: #f8fafc;
-            --card-bg: #ffffff;
-            --text-main: #1e293b;
-            --text-muted: #64748b;
-            --border: #e2e8f0;
-            --danger: #ef4444;
-            --success: #22c55e;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 800px;
-            background: var(--card-bg);
-            border-radius: 16px;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
-            padding: 40px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        h1, h2, h3 {
-            color: var(--text-main);
-            margin-bottom: 20px;
-        }
-
-        p {
-            line-height: 1.6;
-            margin-bottom: 15px;
-            color: var(--text-muted);
-        }
-
-        .screen {
-            display: none;
-        }
-
-        .screen.active {
-            display: block;
-            animation: fadeIn 0.4s ease-in-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .classes-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 12px;
-            margin-bottom: 25px;
-        }
-
-        .class-btn {
-            padding: 14px;
-            border: 2px solid var(--border);
-            border-radius: 10px;
-            background: #fff;
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--text-main);
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .class-btn:hover {
-            border-color: var(--primary);
-            color: var(--primary);
-        }
-
-        .class-btn.selected {
-            background: var(--primary);
-            color: #fff;
-            border-color: var(--primary);
-        }
-
-        .form-group {
-            margin-bottom: 25px;
-        }
-
-        label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: var(--text-main);
-        }
-
-        input[type="text"] {
-            width: 100%;
-            padding: 14px 16px;
-            border: 2px solid var(--border);
-            border-radius: 10px;
-            font-size: 16px;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-
-        input[type="text"]:focus {
-            border-color: var(--primary);
-        }
-
-        .btn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 14px 28px;
-            font-size: 16px;
-            font-weight: 600;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: background 0.2s;
-            width: 100%;
-        }
-
-        .btn:hover {
-            background: var(--primary-hover);
-        }
-
-        .btn:disabled {
-            background: var(--border);
-            cursor: not-allowed;
-        }
-
-        .theory-box {
-            background: #f1f5f9;
-            border-left: 5px solid var(--primary);
-            padding: 20px;
-            border-radius: 0 10px 10px 0;
-            margin-bottom: 25px;
-        }
-
-        .question-card {
-            background: #fff;
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-
-        .options-list {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-top: 12px;
-        }
-
-        .option-label {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 10px 14px;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background 0.1s;
-        }
-
-        .option-label:hover {
-            background: #f8fafc;
-        }
-
-        input[type="radio"] {
-            accent-color: var(--primary);
-            transform: scale(1.2);
-        }
-
-        .cheat-alert {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(239, 68, 68, 0.95);
-            z-index: 9999;
-            color: white;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            text-align: center;
-            padding: 20px;
-        }
-
-        .cheat-alert h2 {
-            color: white;
-            font-size: 28px;
-            margin-bottom: 10px;
-        }
-
-        .reflection-options {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin-bottom: 25px;
-        }
-
-        .reflection-btn {
-            padding: 16px;
-            border: 2px solid var(--border);
-            border-radius: 10px;
-            background: #fff;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            text-align: left;
-            transition: all 0.2s;
-        }
-
-        .reflection-btn:hover {
-            border-color: var(--primary);
-            color: var(--primary);
-        }
-
-        .reflection-btn.selected {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
-
-        .loader {
-            border: 4px solid var(--border);
-            border-top: 4px solid var(--primary);
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 20px auto;
-            display: none;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+        body { font-family: 'Inter', sans-serif; }
+        .fun-font { font-family: 'Comic Neue', cursive; }
     </style>
 </head>
-<body>
+<body class="bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 min-h-screen text-white flex flex-col justify-between">
 
-    <div id="cheatAlert" class="cheat-alert">
-        <h2>⚠ Нарушение правил урока!</h2>
-        <p>Вы свернули браузер или открыли новую вкладку во время выполнения практических задач. По условиям тестирования вам выставлено 0 баллов за задачи, и результат отправлен учителю.</p>
-        <button class="btn" style="background: white; color: var(--danger); width: auto; margin-top: 20px;" onclick="location.reload()">Начать заново</button>
-    </div>
+    <header class="p-6 text-center bg-black/30 backdrop-blur-md shadow-lg border-b border-white/10">
+        <h1 class="text-3xl md:text-5xl font-extrabold fun-font text-yellow-300 tracking-wide drop-shadow-md">
+            🧮 Квантовый Антистресс 3000
+        </h1>
+        <p class="text-sm md:text-base text-purple-200 mt-1">Официальный тренажер нервной системы учителя математики</p>
+    </header>
 
-    <div class="container">
-        <!-- ЭКРАН 1: Регистрация -->
-        <div id="screenRegistration" class="screen active">
-            <h2>📚 Дистанционный урок</h2>
-            <p>Выберите ваш класс и введите ФИО для начала занятия.</p>
-            
-            <div class="form-group">
-                <label>Выберите класс:</label>
-                <div class="classes-grid" id="classGrid">
-                    <button class="class-btn" data-class="6 А">6 А</button>
-                    <button class="class-btn" data-class="6 В">6 В</button>
-                    <button class="class-btn" data-class="9 В">9 В</button>
-                    <button class="class-btn" data-class="11 А">11 А</button>
-                    <button class="class-btn" data-class="11 б">11 б</button>
+    <main class="container mx-auto px-4 py-8 max-w-2xl flex-grow flex flex-col justify-center">
+
+        <!-- Stage 1: The Mini-Game -->
+        <div id="game-card" class="bg-white/10 backdrop-blur-lg rounded-3xl p-6 md:p-8 shadow-2xl border border-white/20 transition-all duration-300">
+            <div class="flex justify-between items-center mb-6">
+                <span class="bg-yellow-400 text-purple-900 font-bold px-3 py-1 rounded-full text-xs uppercase tracking-wider">Мини-игра</span>
+                <span id="score-counter" class="text-sm font-semibold text-purple-200">Счетчик выживания: <span class="text-yellow-300 font-bold text-lg">0</span> / 5</span>
+            </div>
+
+            <div id="game-content" class="text-center py-6">
+                <h2 id="question-title" class="text-xl md:text-2xl font-bold mb-4 text-purple-100">Где допустил ошибку ученик в выражении: 2 + 2 * 2 = 8?</h2>
+                
+                <div id="options-container" class="grid grid-cols-1 gap-3 mt-6">
+                    <!-- Dynamic Buttons -->
                 </div>
             </div>
 
-            <div class="form-group">
-                <label for="studentName">Фамилия и Имя:</label>
-                <input type="text" id="studentName" placeholder="Например: Иванов Иван">
-            </div>
-
-            <button class="btn" id="startBtn" onclick="startLesson()" disabled>Начать урок</button>
+            <div id="game-message" class="mt-6 text-center font-medium text-lg min-h-[3rem] flex items-center justify-center"></div>
         </div>
 
-        <!-- ЭКРАН 2: Теория -->
-        <div id="screenTheory" class="screen">
-            <h2 id="theoryTitle">Тема урока</h2>
-            <div class="theory-box" id="theoryContent"></div>
-            <button class="btn" onclick="goToTest()">Перейти к тесту (5 баллов)</button>
+        <!-- Stage 2: Reflection Form (Hidden initially) -->
+        <div id="reflection-card" class="hidden bg-white/10 backdrop-blur-lg rounded-3xl p-6 md:p-8 shadow-2xl border border-white/20">
+            <h2 class="text-2xl font-bold text-yellow-300 mb-2 fun-font text-center">Рефлексия после сеанса психотерапии</h2>
+            <p class="text-sm text-purple-200 text-center mb-6">Поделитесь состоянием души перед уходом на заслуженный покой или проверку тетрадей.</p>
+
+            <form id="reflection-form" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-purple-200 mb-1">ФИО Учителя (или позывной в учительской):</label>
+                    <input type="text" id="teacher-name" required class="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-purple-300 focus:outline-none focus:border-yellow-400 transition" placeholder="Например: Интеграл Степанович">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-purple-200 mb-1">Оцените уровень дзен после игры (от 1 до 10):</label>
+                    <div class="flex justify-between gap-2">
+                        <label class="flex-1 bg-white/5 border border-white/20 hover:bg-white/20 rounded-xl p-2 text-center cursor-pointer transition">
+                            <input type="radio" name="zen" value="2" class="accent-yellow-400 mb-1">
+                            <span class="block text-xs">2 (Все еще косинус)</span>
+                        </label>
+                        <label class="flex-1 bg-white/5 border border-white/20 hover:bg-white/20 rounded-xl p-2 text-center cursor-pointer transition">
+                            <input type="radio" name="zen" value="5" class="accent-yellow-400 mb-1">
+                            <span class="block text-xs">5 (Производная равна 0)</span>
+                        </label>
+                        <label class="flex-1 bg-white/5 border border-white/20 hover:bg-white/20 rounded-xl p-2 text-center cursor-pointer transition">
+                            <input type="radio" name="zen" value="10" checked class="accent-yellow-400 mb-1">
+                            <span class="block text-xs">10 (Дзен Архимеда)</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-purple-200 mb-1">Ваше пожелание вселенной или министру образования:</label>
+                    <textarea id="teacher-comment" rows="3" required class="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-purple-300 focus:outline-none focus:border-yellow-400 transition" placeholder="Хочу чтобы синус в тупом треугольнике не превышал единицу..."></textarea>
+                </div>
+
+                <button type="submit" id="submit-btn" class="w-full bg-gradient-to-r from-yellow-400 to-orange-500 text-purple-950 font-bold py-3.5 px-6 rounded-xl shadow-lg hover:brightness-110 active:scale-95 transition">
+                    Отправить отчет в канцелярию Вселенной ✨
+                </button>
+            </form>
+
+            <div id="status-message" class="mt-4 text-center text-sm font-semibold hidden"></div>
         </div>
 
-        <!-- ЭКРАН 3: Тест -->
-        <div id="screenTest" class="screen">
-            <h2>📝 Тестовые задания (5 баллов)</h2>
-            <p>Выберите один правильный ответ на каждый вопрос.</p>
-            <div id="testContainer"></div>
-            <button class="btn" onclick="submitTest()">Перейти к практическим задачам</button>
-        </div>
+    </main>
 
-        <!-- ЭКРАН 4: Задачи -->
-        <div id="screenTasks" class="screen">
-            <h2>✍ Задания для решения (5 баллов)</h2>
-            <p><b>Внимание:</b> во время решения практических задач запрещено сворачивать вкладку или переключаться на другие окна!</p>
-            <div id="tasksContainer"></div>
-            <button class="btn" onclick="submitTasks()">Завершить задания и отправить</button>
-        </div>
-
-        <!-- ЭКРАН 5: Рефлексия -->
-        <div id="screenReflection" class="screen">
-            <h2>🎯 Рефлексия урока</h2>
-            <p>Оцените уровень усвоения материала:</p>
-            
-            <div class="reflection-options">
-                <button class="reflection-btn" onclick="selectReflection(this, 'Все понял')">🟢 Все понял</button>
-                <button class="reflection-btn" onclick="selectReflection(this, 'Возникли трудности')">🟡 Возникли трудности</button>
-                <button class="reflection-btn" onclick="selectReflection(this, 'Ничего не понял')">🔴 Ничего не понял</button>
-            </div>
-
-            <div class="loader" id="loader"></div>
-            <button class="btn" id="finishBtn" onclick="finishAndSend()" disabled>Отправить результаты учителю</button>
-        </div>
-
-        <!-- ЭКРАН 6: Финал -->
-        <div id="screenResult" class="screen" style="text-align: center;">
-            <h2>🎉 Урок успешно завершен!</h2>
-            <p id="resultSummary" style="font-size: 18px; margin-bottom: 20px;"></p>
-            <p>Ваши результаты записаны в таблицу учителя. Можете закрыть вкладку.</p>
-        </div>
-    </div>
+    <footer class="p-4 text-center text-xs text-purple-300 bg-black/30 backdrop-blur-md border-t border-white/10">
+        Создано с любовью к интегралам и терпением к ученикам. © 2026
+    </footer>
 
     <script>
-        const curriculum = {
-            "6 А": {
-                subject: "Математика",
-                topic: "Прямая и обратная пропорциональная зависимость, решение задач",
-                theory: `
-                    <p><b>Прямая пропорциональная зависимость:</b> Две величины называются прямо пропорциональными, если при увеличении (уменьшении) одной из них в несколько раз другая увеличивается (уменьшается) во столько же раз. Пример: путь при постоянной скорости ($S = v \\cdot t$).</p>
-                    <p><b>Обратная пропорциональная зависимость:</b> Две величины называются обратно пропорциональными, если при увеличении одной из них в несколько раз другая уменьшается во столько же раз. Пример: время и скорость при постоянном расстоянии ($t = \\frac{S}{v}$).</p>
-                    <p><b>Основное свойство пропорции:</b> Произведение крайних членов пропорции равно произведению её средних членов: если $\\frac{a}{b} = \\frac{c}{d}$, то $ad = bc$.</p>
-                `,
-                test: [
-                    { q: "Какая зависимость между скоростью движения автомобиля и временем пути при постоянном расстоянии?", options: ["Прямая пропорциональная", "Обратная пропорциональная", "Зависимости нет"], correct: 1 },
-                    { q: "За 2 часа поезд прошел 140 км. Какой путь он пройдет за 5 часов при той же скорости?", options: ["350 км", "280 км", "300 км"], correct: 0 },
-                    { q: "Решите пропорцию: $\\frac{x}{4} = \\frac{15}{20}$", options: ["3", "4", "5"], correct: 0 },
-                    { q: "Если 3 маляра покрасили забор за 6 дней, за сколько дней покрасят тот же забор 9 маляров?", options: ["18 дней", "2 дня", "3 дня"], correct: 1 },
-                    { q: "Какая зависимость между стоимостью товара и его количеством при постоянной цене?", options: ["Прямая пропорциональная", "Обратная пропорциональная", "Независимые величины"], correct: 0 }
+        // Game Questions Data Pool
+        const questions = [
+            {
+                title: "Ученик утверждает: «2 + 2 * 2 = 8». В каком параллельном измерении он прав?",
+                options: [
+                    { text: "Где приоритет операций отменен решением дирекции школы", correct: true },
+                    { text: "В мире розовых пони и абсолютного нуля", correct: false },
+                    { text: "Ни в каком, это повод вызвать родителей", correct: true }
                 ],
-                tasks: [
-                    { q: "За 3 кг конфет заплатили 1200 тенге. Сколько тенге стоят 5 кг таких же конфет?", answer: "2000" },
-                    { q: "Рабочий за 4 часа изготавливает 24 детали. Сколько деталей он изготовит за 7 часов?", answer: "42" },
-                    { q: "Автомобиль проехал расстояние со скоростью 60 км/ч за 4 часа. За какое время он проедет это же расстояние со скоростью 80 км/ч? (в часах)", answer: "3" },
-                    { q: "Найдите неизвестный член пропорции из уравнения $12 : x = 4 : 5$. Введите число:", answer: "15" },
-                    { q: "Для варки 2 кг варенья требуется 3 кг сахара. Сколько кг сахара нужно для 6 кг варенья?", answer: "9" }
-                ]
+                explanation: "Верно! Порядок действий — святое, но воображение учеников безгранично."
             },
-            "6 В": {
-                subject: "Математика",
-                topic: "Прямая и обратная пропорциональная зависимость, решение задач",
-                theory: `
-                    <p><b>Прямая пропорциональная зависимость:</b> Величина $y$ прямо пропорциональна $x$, если их отношение постоянно: $y = kx$ ($k > 0$).</p>
-                    <p><b>Обратная пропорциональная зависимость:</b> Величина $y$ обратно пропорциональна $x$, если их произведение постоянно: $xy = k$ или $y = \\frac{k}{x}$.</p>
-                    <p><b>Правило креста для пропорций:</b> Позволяет быстро находить неизвестные компоненты уравнений вида $\\frac{a}{b} = \\frac{c}{x}$.</p>
-                `,
-                test: [
-                    { q: "Какая зависимость между стоимостью ткани и её длиной?", options: ["Прямая пропорциональная", "Обратная пропорциональная", "Не определена"], correct: 0 },
-                    { q: "Решите уравнение из пропорции: $\\frac{5}{x} = \\frac{25}{10}$", options: ["2", "5", "125"], correct: 0 },
-                    { q: "Какая зависимость между количеством работников и временем выполнения фиксированного объема работы?", options: ["Прямая пропорциональная", "Обратная пропорциональная", "Зависимости нет"], correct: 1 },
-                    { q: "Если за 4 метра ленты отдали 600 тенге, сколько стоит 7 метров?", options: ["1050", "900", "1200"], correct: 0 },
-                    { q: "Что показывает коэффициент пропорциональности $k$ в формуле $y = kx$?", options: ["Скорость изменения / цену единицы", "Сумму величин", "Разность"], correct: 0 }
+            {
+                title: "Что делает учитель математики, когда видит фразу «Пусть x — это душа ученика»?",
+                options: [
+                    { text: "Приравнивает её к нулю для упрощения расчетов", correct: true },
+                    { text: "Ищет область допустимых значений (ОДЗ)", correct: true },
+                    { text: "Плачет в углу учительской над чашкой остывшего чая", correct: true }
                 ],
-                tasks: [
-                    { q: "За 4 часа насос перекачал 32 м³ воды. Сколько воды перекачает насос за 7 часов?", answer: "56" },
-                    { q: "Длина прямоугольника 12 см, ширина 5 см. Найдите ширину другого прямоугольника с той же площадью, если его длина равна 15 см.", answer: "4" },
-                    { q: "Найдите неизвестный член пропорции $x : 8 = 15 : 20$. Введите число:", answer: "6" },
-                    { q: "За 6 тетрадей заплатили 900 тенге. Сколько стоят 10 таких тетрадей?", answer: "1500" },
-                    { q: "Бригада из 6 рабочих выполнила ремонт школы за 10 дней. За сколько дней выполнят ту же работу 12 рабочих?", answer: "5" }
-                ]
+                explanation: "Правильный ответ: все варианты верны одновременно!"
             },
-            "9 В": {
-                subject: "Геометрия",
-                topic: "Векторы, действия над векторами",
-                theory: `
-                    <p><b>Основные определения:</b> Вектор — это направленный отрезок, для которого указано его начало и конец. Обозначается $\\vec{a}$ или $\\overline{AB}$. Длина вектора (модуль) $\\lvert\\vec{a}\\rvert$ — это длина отрезка. Для вектора $\\vec{a}(x; y)$ длина находится по формуле: $\\lvert\\vec{a}\\rvert = \\sqrt{x^2 + y^2}$.</p>
-                    <p><b>Координаты вектора:</b> Если заданы координаты точек начала $A(x_1; y_1)$ и конца $B(x_2; y_2)$, то координаты вектора $\\vec{AB}$ равны: $\\vec{AB} = (x_2 - x_1; y_2 - y_1)$.</p>
-                    <p><b>Сумма векторов в координатной форме:</b> Если даны два вектора $\\vec{a}(x_1; y_1)$ и $\\vec{b}(x_2; y_2)$, то их сумма $\\vec{a} + \\vec{b}$ вычисляется как сложение их соответствующих координат: $\\vec{a} + \\vec{b} = (x_1 + x_2; y_1 + y_2)$.</p>
-                    <p><b>Разность векторов в координатной форме:</b> Разностью двух векторов $\\vec{a}(x_1; y_1)$ и $\\vec{b}(x_2; y_2)$ называется такой вектор, разность координат которого равна: $\\vec{a} - \\vec{b} = (x_1 - x_2; y_1 - y_2)$.</p>
-                `,
-                test: [
-                    { q: "Чему равна длина вектора $\\vec{a}(3; 4)$?", options: ["5", "7", "25"], correct: 0 },
-                    { q: "Если координаты начала $A(1; 2)$ и конца $B(4; 6)$, каковы координаты вектора $\\vec{AB}$?", options: ["(3; 4)", "(5; 8)", "(-3; -4)"], correct: 0 },
-                    { q: "Даны векторы $\\vec{a}(2; 3)$ и $\\vec{b}(4; 1)$. Найдите координаты их суммы $\\vec{a} + \\vec{b}$.", options: ["(6; 4)", "(2; -2)", "(8; 3)"], correct: 0 },
-                    { q: "Даны векторы $\\vec{a}(5; 7)$ и $\\vec{b}(2; 3)$. Найдите координаты их разности $\\vec{a} - \\vec{b}$.", options: ["(3; 4)", "(7; 10)", "(3; 10)"], correct: 0 },
-                    { q: "Как найти длину вектора $\\vec{a}(x; y)$?", options: ["$\\sqrt{x^2 + y^2}$", "$x + y$", "$x^2 + y^2$"], correct: 0 }
+            {
+                title: "Почему графики функций никогда не пересекаются в личной жизни математика?",
+                options: [
+                    { text: "Потому что параллельны из-за высокой занятости проверкой тетрадей", correct: true },
+                    { text: "У них разный угловой коэффициент темперамента", correct: true },
+                    { text: "Асимптоты приближаются, но так и не касаются", correct: true }
                 ],
-                tasks: [
-                    { q: "Найдите длину вектора $\\vec{a}(-3; 4)$.", answer: "5" },
-                    { q: "Найдите абсциссу (первую координату) вектора $\\vec{AB}$, если его начало $A(1; 2)$, а конец $B(6; 8)$.", answer: "5" },
-                    { q: "Даны векторы $\\vec{a}(3; 5)$ и $\\vec{b}(2; 1)$. Найдите абсциссу (первую координату) вектора $\\vec{a} + \\vec{b}$.", answer: "5" },
-                    { q: "Даны векторы $\\vec{a}(7; 9)$ и $\\vec{b}(4; 2)$. Найдите ординату (вторую координату) вектора $\\vec{a} - \\vec{b}$.", answer: "7" },
-                    { q: "Найдите ординату (вторую координату) вектора $\\vec{AB}$, если его начало $A(2; 3)$, а конец $B(5; 7)$.", answer: "4" }
-                ]
+                explanation: "Глубокая математическая лирика. Продолжаем сеанс лечения нервов!"
             },
-            "11 А": {
-                subject: "Геометрия",
-                topic: "Многогранники (призмы, пирамиды, свойства)",
-                theory: `
-                    <p><b>Многогранник</b> — тело, ограниченное конечным числом плоских многоугольников (граней).</p>
-                    <p><b>Призма</b> — многогранник, у которого две грани (основания) равные многоугольники, лежащие в параллельных плоскостях, а остальные грани — параллелограммы.</p>
-                    <p><b>Пирамида</b> — многогранник, основание которого — многоугольник, а остальные грани — треугольники с общей вершиной.</p>
-                    <p><b>Теорема Эйлера для выпуклых многогранников:</b> $V - R + \\Gamma = 2$ (где $V$ — вершины, $R$ — рёбра, $\\Gamma$ — грани).</p>
-                `,
-                test: [
-                    { q: "Сколько граней у пятиугольной призмы?", options: ["7", "5", "10"], correct: 0 },
-                    { q: "Чему равна сумма плоских углов при вершине правильной треугольной пирамиды, если боковые грани — равносторонние треугольники?", options: ["180°", "270°", "360°"], correct: 0 },
-                    { q: "Если у многогранника 6 вершин и 12 ребер, сколько у него граней по формуле Эйлера?", options: ["8", "6", "10"], correct: 0 },
-                    { q: "Основанием прямого параллелепипеда является...", options: ["Произвольный параллелограмм", "Прямоугольник", "Квадрат"], correct: 0 },
-                    { q: "Как называется призма, боковые ребра которой перпендикулярны основаниям?", options: ["Прямая", "Правильная", "Наклонная"], correct: 0 }
+            {
+                title: "Какой самый страшный кошмар снится учителю в ночь перед ВПР или экзаменом?",
+                options: [
+                    { text: "Что деление на ноль официально разрешили приказом сверху", correct: true },
+                    { text: "Что все ученики внезапно списали друг у друга абсолютно правильно", correct: true },
+                    { text: "Что корень из отрицательного числа потребовал паспорт при входе", correct: true }
                 ],
-                tasks: [
-                    { q: "Сколько рёбер у четырехугольной пирамиды?", answer: "8" },
-                    { q: "Сколько вершин у шестиугольной призмы?", answer: "12" },
-                    { q: "Найдите число граней правильной треугольной пирамиды.", answer: "4" },
-                    { q: "Сколько диагоналей у куба?", answer: "4" },
-                    { q: "Если у многогранника 10 вершин и 15 рёбер, сколько у него граней?", answer: "7" }
-                ]
+                explanation: "Страшнее только потерянный красный маркер на доске."
             },
-            "11 б": {
-                subject: "Геометрия",
-                topic: "Многогранники (призмы, пирамиды, свойства)",
-                theory: `
-                    <p><b>Правильный многогранник</b> — выпуклый многогранник, у которого все грани — равные правильные многоугольники.</p>
-                    <p>Существует ровно 5 видов правильных многогранников: тетраэдр, куб, октаэдр, додекаэдр, икосаэдр.</p>
-                    <p><b>Объем призмы:</b> $V = S_{осн} \\cdot h$.</p>
-                    <p><b>Объем пирамиды:</b> $V = \\frac{1}{3} S_{осн} \\cdot h$.</p>
-                `,
-                test: [
-                    { q: "Сколько граней у октаэдра?", options: ["8", "6", "12"], correct: 0 },
-                    { q: "Какая геометрическая фигура лежит в основании правильной четырехугольной пирамиды?", options: ["Квадрат", "Прямоугольник", "Ромб"], correct: 0 },
-                    { q: "Чему равен объем пирамиды с площадью основания 12 и высотой 6?", options: ["24", "72", "36"], correct: 0 },
-                    { q: "Сколько вершин у икосаэдра?", options: ["12", "20", "30"], correct: 0 },
-                    { q: "Если боковое ребро наклонной призмы равно 10, а угол наклона к плоскости основания равен 30°, найдите высоту призмы.", options: ["5", "10", "5√3"], correct: 0 }
+            {
+                title: "Закончите формулу: «Синус угла есть отношение...»",
+                options: [
+                    { text: "Противолежащего катета к гипотенузе, а терпения учителя — к бесконечности", correct: true },
+                    { text: "Душевного спокойствия на уроке к количеству кричащих детей", correct: true },
+                    { text: "Все варианты — абсолютная математическая истина", correct: true }
                 ],
-                tasks: [
-                    { q: "Найдите объем призмы, если площадь ее основания равна 15, а высота равна 4.", answer: "60" },
-                    { q: "Найдите объем пирамиды, если площадь ее основания равна 9, а высота равна 7.", answer: "21" },
-                    { q: "Сколько рёбер у октаэдра?", answer: "12" },
-                    { q: "Сколько граней у куба?", answer: "6" },
-                    { q: "Найдите высоту пирамиды, если ее объем равен 40, а площадь основания равна 15? Введите ответ (если дробное, округлите до сотых через точку)", answer: "8" }
-                ]
+                explanation: "Поздравляем! Вы прошли курс экстренной психологической стабилизации."
             }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+
+        const gameCard = document.getElementById('game-card');
+        const reflectionCard = document.getElementById('reflection-card');
+        const questionTitle = document.getElementById('question-title');
+        const optionsContainer = document.getElementById('options-container');
+        const gameMessage = document.getElementById('game-message');
+        const scoreCounter = document.querySelector('#score-counter span');
+
+        function loadQuestion() {
+            if (currentQuestionIndex >= questions.length) {
+                // End of game, show reflection
+                gameCard.classList.add('hidden');
+                reflectionCard.classList.remove('hidden');
+                return;
+            }
+
+            const q = questions[currentQuestionIndex];
+            questionTitle.textContent = q.title;
+            optionsContainer.innerHTML = '';
+            gameMessage.textContent = '';
+
+            q.options.forEach((opt) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left bg-white/5 hover:bg-white/20 border border-white/20 rounded-2xl p-4 transition-all duration-200 font-medium text-purple-100 shadow-md active:scale-98 flex items-center justify-between group";
+                btn.innerHTML = `<span>${opt.text}</span> <span class="text-yellow-400 opacity-0 group-hover:opacity-100 transition">➔</span>`;
+                btn.onclick = () => handleAnswer(opt, q.explanation);
+                optionsContainer.appendChild(btn);
+            });
+
+            scoreCounter.textContent = currentQuestionIndex;
+        }
+
+        function handleAnswer(option, explanation) {
+            score++;
+            gameMessage.innerHTML = `<span class="text-green-300 font-bold">💡 ${explanation}</span>`;
+            
+            // Disable buttons temporarily
+            const buttons = optionsContainer.querySelectorAll('button');
+            buttons.forEach(b => b.disabled = true);
+
+            setTimeout(() => {
+                currentQuestionIndex++;
+                loadQuestion();
+            }, 2200);
+        }
+
+        // Initialize game on load
+        window.onload = () => {
+            loadQuestion();
         };
 
-        let state = {
-            selectedClass: null,
-            studentName: "",
-            testAnswers: {},
-            taskAnswers: {},
-            reflection: null,
-            scoreTest: 0,
-            scoreTasks: 0,
-            cheated: false,
-            antiCheatActive: false
-        };
+        // Form submission handling
+        const reflectionForm = document.getElementById('reflection-form');
+        const statusMessage = document.getElementById('status-message');
+        const submitBtn = document.getElementById('submit-btn');
 
-        const classButtons = document.querySelectorAll('.class-btn');
-        const studentNameInput = document.getElementById('studentName');
-        const startBtn = document.getElementById('startBtn');
+        reflectionForm.onsubmit = function(e) {
+            e.preventDefault();
 
-        classButtons.forEach(btn => {
-            btn.addEventListener('click', () => {
-                classButtons.forEach(b => b.classList.remove('selected'));
-                btn.classList.add('selected');
-                state.selectedClass = btn.dataset.class;
-                checkReady();
-            });
-        });
+            const teacherName = document.getElementById('teacher-name').value;
+            const zenLevel = document.querySelector('input[name="zen"]:checked').value;
+            const comment = document.getElementById('teacher-comment').value;
 
-        studentNameInput.addEventListener('input', (e) => {
-            state.studentName = e.target.value.trim();
-            checkReady();
-        });
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Отправка во Вселенную...';
+            statusMessage.classList.remove('hidden');
+            statusMessage.className = "mt-4 text-center text-sm font-semibold text-yellow-300";
+            statusMessage.textContent = 'Передаем данные через спутник математиков...';
 
-        function checkReady() {
-            if (state.selectedClass && state.studentName.length >= 2) {
-                startBtn.disabled = false;
-            } else {
-                startBtn.disabled = true;
-            }
-        }
+            // IMPORTANT: Replace this URL with your published Google Apps Script Web App URL!
+            const scriptURL = 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE';
 
-        function triggerMathJax() {
-            if (window.MathJax && window.MathJax.typesetPromise) {
-                window.MathJax.typesetPromise().catch((err) => console.log('MathJax error:', err));
-            }
-        }
-
-        function startLesson() {
-            const data = curriculum[state.selectedClass];
-            document.getElementById('theoryTitle').innerText = `${state.selectedClass}: ${data.topic}`;
-            document.getElementById('theoryContent').innerHTML = data.theory;
-            
-            switchScreen('screenTheory');
-            setTimeout(triggerMathJax, 50);
-        }
-
-        function goToTest() {
-            renderTest();
-            switchScreen('screenTest');
-            setTimeout(triggerMathJax, 50);
-        }
-
-        function renderTest() {
-            const container = document.getElementById('testContainer');
-            const questions = curriculum[state.selectedClass].test;
-            let html = '';
-            
-            questions.forEach((item, index) => {
-                html += `
-                    <div class="question-card">
-                        <p><b>Вопрос ${index + 1}.</b> ${item.q}</p>
-                        <div class="options-list">
-                `;
-                item.options.forEach((opt, optIndex) => {
-                    html += `
-                        <label class="option-label">
-                            <input type="radio" name="test_${index}" value="${optIndex}" onchange="saveTestAnswer(${index}, ${optIndex})">
-                            ${opt}
-                        </label>
-                    `;
-                });
-                html += `</div></div>`;
-            });
-            container.innerHTML = html;
-        }
-
-        function saveTestAnswer(qIndex, optIndex) {
-            state.testAnswers[qIndex] = optIndex;
-        }
-
-        function submitTest() {
-            const questions = curriculum[state.selectedClass].test;
-            let score = 0;
-            questions.forEach((item, index) => {
-                if (state.testAnswers[index] === item.correct) {
-                    score += 1;
-                }
-            });
-            state.scoreTest = score;
-            
-            renderTasks();
-            switchScreen('screenTasks');
-            setTimeout(triggerMathJax, 50);
-            enableAntiCheat(); // Античит активируется строго во время задач
-        }
-
-        function renderTasks() {
-            const container = document.getElementById('tasksContainer');
-            const tasks = curriculum[state.selectedClass].tasks;
-            let html = '';
-            
-            tasks.forEach((item, index) => {
-                html += `
-                    <div class="question-card">
-                        <p><b>Задача ${index + 1}.</b> ${item.q}</p>
-                        <input type="text" id="task_input_${index}" placeholder="Введите ответ..." style="margin-top: 10px;">
-                    </div>
-                `;
-            });
-            container.innerHTML = html;
-        }
-
-        function submitTasks() {
-            if (state.cheated) return;
-            disableAntiCheat(); // Деактивируем античит перед выходом
-            
-            const tasks = curriculum[state.selectedClass].tasks;
-            let score = 0;
-            
-            tasks.forEach((item, index) => {
-                const val = document.getElementById(`task_input_${index}`).value.trim().replace(',', '.');
-                state.taskAnswers[index] = val;
-                if (val === item.answer) {
-                    score += 1;
-                }
-            });
-            state.scoreTasks = score;
-            
-            switchScreen('screenReflection');
-        }
-
-        function enableAntiCheat() {
-            state.antiCheatActive = true;
-            document.addEventListener('visibilitychange', handleVisibilityChange);
-            window.addEventListener('blur', handleBlur);
-        }
-
-        function disableAntiCheat() {
-            state.antiCheatActive = false;
-            document.removeEventListener('visibilitychange', handleVisibilityChange);
-            window.removeEventListener('blur', handleBlur);
-        }
-
-        function handleVisibilityChange() {
-            if (document.hidden && state.antiCheatActive && !state.cheated) {
-                triggerCheat();
-            }
-        }
-
-        function handleBlur() {
-            if (state.antiCheatActive && !state.cheated) {
-                triggerCheat();
-            }
-        }
-
-        function triggerCheat() {
-            state.cheated = true;
-            state.scoreTasks = 0;
-            disableAntiCheat();
-            document.getElementById('cheatAlert').style.display = 'flex';
-            sendDataToSheets(true);
-        }
-
-        function selectReflection(btn, text) {
-            document.querySelectorAll('.reflection-btn').forEach(b => b.classList.remove('selected'));
-            btn.classList.add('selected');
-            state.reflection = text;
-            document.getElementById('finishBtn').disabled = false;
-        }
-
-        function finishAndSend() {
-            sendDataToSheets(false);
-        }
-
-        function sendDataToSheets(isCheated) {
-            const webhookUrl = "https://script.google.com/macros/s/AKfycbyuDDZAY8faVora0wB9leMT6BXHVUionrQQiNUOgNj89one_-OSezLpV-i0XuSF50FFaA/exec";
-            
-            const totalScore = state.scoreTest + state.scoreTasks;
+            // Preparing payload
             const payload = {
-                timestamp: new Date().toLocaleString(),
-                studentClass: state.selectedClass,
-                fullName: state.studentName,
-                scoreTest: state.scoreTest,
-                scoreTasks: state.scoreTasks,
-                totalScore: totalScore,
-                reflection: isCheated ? "Не указано (Нарушение)" : (state.reflection || "Не указано"),
-                antiCheat: isCheated ? "Нарушение (свернул вкладку)" : "Нет"
+                name: teacherName,
+                zen: zenLevel,
+                comment: comment,
+                timestamp: new Date().toLocaleString()
             };
 
-            document.getElementById('loader').style.display = 'block';
-            document.getElementById('finishBtn').disabled = true;
+            // If template placeholder hasn't been changed yet, simulate successful save for demo purposes
+            if (scriptURL.includes('YOUR_GOOGLE_APPS_SCRIPT')) {
+                setTimeout(() => {
+                    statusMessage.className = "mt-4 text-center text-sm font-semibold text-green-300";
+                    statusMessage.textContent = '🎉 Успешно отправлено! (Демо-режим: укажите реальный URL скрипта в коде для записи в таблицу).';
+                    reflectionForm.reset();
+                    submitBtn.textContent = 'Отправлено ✔';
+                }, 1500);
+                return;
+            }
 
-            fetch(webhookUrl, {
-                method: "POST",
-                mode: "no-cors",
-                headers: {
-                    "Content-Type": "text/plain;charset=utf-8",
-                },
+            // Real fetch request to Google Sheets script
+            fetch(scriptURL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
-            }).then(() => {
-                document.getElementById('loader').style.display = 'none';
-                if (!isCheated) {
-                    showResultScreen(totalScore);
-                }
-            }).catch(err => {
-                console.error("Ошибка отправки:", err);
-                document.getElementById('loader').style.display = 'none';
-                if (!isCheated) {
-                    showResultScreen(totalScore);
-                }
+            })
+            .then(() => {
+                statusMessage.className = "mt-4 text-center text-sm font-semibold text-green-300";
+                statusMessage.textContent = '🎉 Отчет успешно зарегистрирован в канцелярии!';
+                reflectionForm.reset();
+                submitBtn.textContent = 'Отправлено ✔';
+            })
+            .catch(error => {
+                console.error('Error!', error);
+                statusMessage.className = "mt-4 text-center text-sm font-semibold text-red-400";
+                statusMessage.textContent = '⚠️ Ошибка связи со спутником. Проверьте URL скрипта.';
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Попробовать снова';
             });
-        }
-
-        function showResultScreen(total) {
-            document.getElementById('resultSummary').innerText = 
-                `${state.studentName} (${state.selectedClass})\nТест: ${state.scoreTest}/5 | Задачи: ${state.scoreTasks}/5\nИтоговый балл: ${total} / 10`;
-            switchScreen('screenResult');
-        }
-
-        function switchScreen(screenId) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById(screenId).classList.add('active');
-        }
+        };
     </script>
 </body>
 </html>
